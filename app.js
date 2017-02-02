@@ -14,7 +14,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.engine('hbs', hbs({
 	extname: 'hbs',
-	defaultLayout: 'layout',
+	defaultLayout: 'main',
 	layoutsDir: path.join(__dirname, '/views/layouts/'),
 	partialsDir: path.join(__dirname, '/views/partials/')
 }));
@@ -55,11 +55,11 @@ app.use(function (req, res, next) {
 var index = require('./routes/index');
 app.use('/', index);
 
-var users = require('./routes/users');
-app.use('/users', users);
+var admin = require('./routes/admin');
+app.use('/admin', admin);
 
 var api = require('./routes/api');
-app.use('/api', users);
+app.use('/api', api);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
