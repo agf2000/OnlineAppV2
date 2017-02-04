@@ -1,0 +1,19 @@
+#btnCancel,
+#btnRemove,
+#permissionEdit,
+#seoEdit,
+#productsEdit,
+#extraEdit {
+    display: none;
+}
+
+#treeViewCategories {
+    max-height: 400px;
+    overflow: auto;
+}
+
+#mainCategories {
+    max-height: 300px;
+    overflow: auto;
+}
+

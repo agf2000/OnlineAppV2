@@ -19,7 +19,9 @@ router.get('/', function (req, res, next) {
 /* GET categories page. */
 router.get('/categorias', function (req, res, next) {
 	res.render('admin/categories', {
-		title: 'Categoria'
+		title: 'Categoria',
+		css: ['/dist/css/pages/categories.css'],
+		script: ['/dist/js/app/utilities.js', '/dist/js/pages/categories.js']
 	});
 });
 
