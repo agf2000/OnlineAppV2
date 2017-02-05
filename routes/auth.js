@@ -7,7 +7,7 @@ var router = express.Router();
 module.exports = router;
 
 router.get("/login", function (req, res) {
-/*	if (req.app.get("env") === "development") {
+	if (req.app.get("env") === "development") {
 		var user = users[0];
 		if (req.query.user) {
 			user = _.find(users, u => u.name === req.query.user);
@@ -19,7 +19,7 @@ router.get("/login", function (req, res) {
 			return res.redirect('/');
 		});
 		return;
-	}*/
+	}
 	res.render("login", {
 		layout: false
 	});
