@@ -7,13 +7,6 @@
     display: none;
 }
 
-#treeViewCategories {
-    max-height: 400px;
-    overflow: auto;
+#treeViewCategories.jqx-widget-content {
+    border: none !important;
 }
-
-#mainCategories {
-    max-height: 300px;
-    overflow: auto;
-}
-

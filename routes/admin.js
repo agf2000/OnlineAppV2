@@ -22,7 +22,8 @@ router.get('/categorias', function (req, res, next) {
 		title: 'Categorias',
 		css: [
 			'/dist/css/pages/categories.css',
-			'/plugins/bootstrap-switch/bootstrap-switch.min.css'
+			'/plugins/bootstrap-switch/bootstrap-switch.min.css',
+			'/plugins/jqwidgets/styles/jqx.base.css'
 		],
 		script: [
 			'/dist/js/app/utilities.js',
@@ -34,6 +35,7 @@ router.get('/categorias', function (req, res, next) {
 			'/plugins/jqwidgets/jqxscrollbar.js',
 			'/plugins/jqwidgets/jqxbuttons.js',
 			'/plugins/knockout/knockout-3.4.0.js',
+			'/plugins/tristate-checkbox/js/tristate.min.js',
 			'/plugins/bootstrap-switch/bootstrap-switch.min.js',
 			'/dist/js/pages/categoriesViewModel.js',
 			'/dist/js/pages/categories.js'

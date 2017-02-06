@@ -41,7 +41,7 @@ my.viewModel = function () {
 
         self.catPermissions = ko.observableArray([]),
         self.setButton = ko.computed(function () {
-            var btnLabel = '<i class="icon-plus icon-white"></i>&nbsp; Inserir';
+            var btnLabel = '<i class="fa fa-plus fa-white"></i>&nbsp; Inserir';
             if (self.categoryId()) {
                 btnLabel = '<i class="fa fa-check"></i>&nbsp; Atualizar';
                 $('#btnCancel').show();

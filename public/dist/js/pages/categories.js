@@ -2,10 +2,13 @@
 
 $(function () {
 
+    PNotify.prototype.options.styling = "bootstrap3";
     my.personId = my.getParameterByName('itemId');
     my.cats = null;
     my.returnUrl = my.getParameterByName('return');
     var menuItems = null;
+
+    my.userInfo = JSON.parse(Cookies.getJSON('OnlineUser').replace('j:', ''));
 
     // VIEW MODEL
     my.viewModel();
@@ -42,7 +45,7 @@ $(function () {
         });
     };
 
-    $('.dnnFormHelp').tooltip({ placement: 'right' });
+    // $('.dnnFormHelp').tooltip({ placement: 'right' });
 
     var menu = $('#editCategoryMenu').kendoMenu({
         select: function (e) {
@@ -105,11 +108,6 @@ $(function () {
     //    menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));
     //}
 
-    $('#orderTextBox').kendoNumericTextBox({
-        format: '',
-        value: 1
-    });
-
     my.loadCategories = function () {
         if (!my.cats) {
             var result = null;
@@ -130,8 +128,8 @@ $(function () {
     my.buildMenudata = function () {
         var source = [];
         var categoryItems = [];
-        for (var i = 0; i < my.cats.length; i++) {
-            var item = my.cats[i];
+        my.cats.forEach(function (cat) {
+            var item = cat;
             var text = item.CategoryName;
             var id = item.CategoryId;
             var desc = item.CategoryDesc;
@@ -161,7 +159,7 @@ $(function () {
                 };
                 source[code] = categoryItems[code];
             }
-        }
+        });
         return source;
     };
     my.sourceMenu = my.buildMenudata();
@@ -173,16 +171,16 @@ $(function () {
             li.appendTo(parent);
             countMenu = countMenu + 1;
         }
-        $.each(items, function (cat) {
-            if (cat.text) {
+        items.forEach(function (item) {
+            if (item.text) {
                 // create LI element and append it to the parent element.
-                li = $("<li id='" + cat.item.CategoryId + "'>" + cat.text + "</li>");
+                li = $("<li id='" + item.id + "'>" + item.text + "</li>");
                 li.appendTo(parent);
                 // if there are sub items, call the buildUL function.
-                if (cat.items && cat.items.length > 0) {
+                if (item.items && item.items.length > 0) {
                     var ul = $("<ul></ul>");
                     ul.appendTo(li);
-                    my.buildMenuUL(ul, cat.items);
+                    my.buildMenuUL(ul, item.items);
                 }
             }
         });
@@ -200,21 +198,21 @@ $(function () {
             my.vm.categoryId(item.id);
             my.loadCatPermissions();
             $.getJSON('/api/categories/' + item.id + '/pt-BR', function (data) {
-                my.vm.hidden(data.Hidden);
-                my.vm.message(data.Message);
-                my.vm.lang(data.Lang);
-                my.vm.archived(data.Archived);
-                my.vm.listOrder(data.ListOrder);
-                my.vm.categoryName(data.CategoryName);
-                my.vm.categoryDesc(data.CategoryDesc);
-                my.vm.seoName(data.SEOName);
-                my.vm.seoPageTitle(data.SEOPageTitle);
-                my.vm.metaDesc(data.MetaDescription);
-                my.vm.metaKeywords(data.MetaKeywords);
-                my.vm.productCount(data.ProductCount);
-                if (data.ParentCategoryId > 0) {
+                my.vm.hidden(data[0].Hidden);
+                my.vm.message(data[0].Message);
+                my.vm.lang(data[0].Lang);
+                my.vm.archived(data[0].Archived);
+                my.vm.listOrder(data[0].ListOrder);
+                my.vm.categoryName(data[0].CategoryName);
+                my.vm.categoryDesc(data[0].CategoryDesc);
+                my.vm.seoName(data[0].SEOName);
+                my.vm.seoPageTitle(data[0].SEOPageTitle);
+                my.vm.metaDesc(data[0].MetaDescription);
+                my.vm.metaKeywords(data[0].MetaKeywords);
+                my.vm.productCount(data[0].ProductCount);
+                if (data[0].ParentCategoryId > 0) {
                     $('.jqx-dropdownlist-content').removeClass('jqx-dropdownlist-state-normal-placeholder');
-                    my.vm.parentId(data.ParentCategoryId);
+                    my.vm.parentId(data[0].ParentCategoryId);
                     $('#mainCategories').jqxTree('selectItem', $('#ddl_' + my.vm.parentId() + '')[0]);
                 } else {
                     my.vm.parentId(0);
@@ -222,7 +220,7 @@ $(function () {
                     $('#availCategoriesButton').jqxDropDownButton('setContent', my.dropDownContent);
                 }
             });
-            my.categoryProductsData.read();
+            //my.categoryProductsData.read();
 
             var menuItems = $('#editCategoryMenu').find('.k-state-disabled');
             menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));
@@ -233,7 +231,7 @@ $(function () {
             //}, 1000);
         }
     });
-    
+
     var countDDMenu = 1;
     my.buildDDMenuUL = function (parent, items) {
         var li = $('<li>Nenhuma</li>');
@@ -241,16 +239,16 @@ $(function () {
             li.appendTo(parent);
             countDDMenu = countDDMenu + 1;
         }
-        $.each(items, function (cat) {
-            if (cat.text) {
+        items.forEach(function (item) {
+            if (item.text) {
                 // create LI element and append it to the parent element.
-                li = $("<li id='ddl_" + cat.item.CategoryId + "'>" + cat.text + "</li>");
+                li = $("<li id='ddl_" + item.id + "'>" + item.text + "</li>");
                 li.appendTo(parent);
                 // if there are sub items, call the buildUL function.
-                if (cat.items && cat.items.length > 0) {
+                if (item.items && item.items.length > 0) {
                     var ul = $("<ul></ul>");
                     ul.appendTo(li);
-                    my.buildDDMenuUL(ul, cat.items);
+                    my.buildDDMenuUL(ul, item.items);
                 }
             }
         });
@@ -303,13 +301,16 @@ $(function () {
                 if (value.extension.toUpperCase() !== '.JPG' && value.extension.toUpperCase() !== '.PNG' && value.extension.toUpperCase() !== '.DOC' && value.extension.toUpperCase() !== '.PDF' && value.extension.toUpperCase() !== '.DOCX' && value.extension.toUpperCase() !== '.GIF' && value.extension.toUpperCase() !== '.ZIP' && value.extension.toUpperCase() !== '.RAR') {
                     e.preventDefault();
                     //$().toastmessage('showWarningToast', 'É permitido enviar somente arquivos com formato jpg e png.');
-                    $.pnotify({
+                    var notice = new PNotify({
                         title: 'Aten&#231;&#227;o!',
                         text: '&#201; permitido enviar somente arquivos com formato jpg e png.',
-                        type: 'warning',
-                        icon: 'fa fa-warning fa-lg',
-                        addclass: "stack-bottomright",
+                        type: 'success',
+                        animation: 'none',
+                        addclass: 'stack-bottomright',
                         stack: my.stack_bottomright
+                    });
+                    notice.get().click(function () {
+                        notice.remove();
                     });
                 }
             });
@@ -342,14 +343,16 @@ $(function () {
 
         },
         error: function (e) {
-            //$().toastmessage('showErrorToast', 'Não foi possível o envio do arquivo.');
-            $.pnotify({
+            var notice = new PNotify({
                 title: 'Erro!',
                 text: 'N&#227;o foi possível o envio do arquivo.',
                 type: 'error',
-                icon: 'fa fa-times-circle fa-lg',
-                addclass: "stack-bottomright",
+                animation: 'none',
+                addclass: 'stack-bottomright',
                 stack: my.stack_bottomright
+            });
+            notice.get().click(function () {
+                notice.remove();
             });
         }
     });
@@ -425,7 +428,7 @@ $(function () {
         $('#files').click();
     });
 
-    $("#productSearch").kendoAutoComplete({
+    /*$("#productSearch").kendoAutoComplete({
         delay: 500,
         minLength: 5,
         dataValueField: 'ProductId',
@@ -587,13 +590,13 @@ $(function () {
                 width: 50
             }
         ]
-    });
+    });*/
 
     $("#groupsGrid").kendoGrid({
         dataSource: new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '/api/store/GetPublicRoles?portalId=0'
+                    url: '/api/store/roles/0'
                 }
             },
             sort: {
@@ -602,7 +605,7 @@ $(function () {
             },
             schema: {
                 model: {
-                    id: 'RoleId'
+                    id: 'RoleID'
                 }
             }
         }),
@@ -618,12 +621,12 @@ $(function () {
             field: 'View',
             title: 'Vêr',
             width: '10%',
-            template: '<span id="spanView_#= RoleId #" style="cursor: default;"><input type="hidden" id="view_#= RoleId #" name="view_#= RoleId #" value="0" /></span>'
+            template: '<span id="spanView_#= RoleID #" style="cursor: default;"><input type="hidden" id="view_#= RoleID #" name="view_#= RoleID #" value="0" /></span>'
         }, {
             field: 'Edit',
             title: 'Editar',
             width: '10%',
-            template: '<span id="spanEdit_#= RoleId #" style="cursor: default;"><input type="hidden" id="edit_#= RoleId #" name="edit_#= RoleId #" value="0" /></span>'
+            template: '<span id="spanEdit_#= RoleID #" style="cursor: default;"><input type="hidden" id="edit_#= RoleID #" name="edit_#= RoleID #" value="0" /></span>'
         }],
         dataBound: function () {
             if (this.dataSource.view().length > 0) {
@@ -633,37 +636,45 @@ $(function () {
                 //});
                 $.each(grid.tbody.find('tr'), function () {
                     var model = grid.dataItem(this);
-                    switch (model.RoleId) {
+                    switch (model.RoleID) {
                         case 0:
-                            $('[data-uid=' + model.uid + ']').css({ 'display': 'none' });
+                            $('[data-uid=' + model.uid + ']').css({
+                                'display': 'none'
+                            });
                             break;
                         case 1:
-                            $('[data-uid=' + model.uid + ']').css({ 'display': 'none' });
+                            $('[data-uid=' + model.uid + ']').css({
+                                'display': 'none'
+                            });
                             break;
                         case 2:
-                            $('[data-uid=' + model.uid + ']').css({ 'display': 'none' });
+                            $('[data-uid=' + model.uid + ']').css({
+                                'display': 'none'
+                            });
                             break;
                         case 4:
-                            $('[data-uid=' + model.uid + ']').css({ 'display': 'none' });
+                            $('[data-uid=' + model.uid + ']').css({
+                                'display': 'none'
+                            });
                             break;
                     }
                     if (my.vm.catPermissions().length > 0) {
                         ko.utils.arrayFirst(my.vm.catPermissions(), function (item) {
-                            if (item.RoleId() === model.RoleId) {
+                            if (item.RoleId() === model.RoleID) {
                                 if (item.AllowAccess()) {
-                                    $('#view_' + model.RoleId).val(item.PermissionId());
+                                    $('#view_' + model.RoleID).val(item.PermissionId());
                                 } else {
-                                    $('#edit_' + model.RoleId).val(item.PermissionId());
+                                    $('#edit_' + model.RoleID).val(item.PermissionId());
                                 }
-                                if (model.RoleId === 9999) $('#edit_' + model.RoleId).val(0);
+                                if (model.RoleID === 9999) $('#edit_' + model.RoleID).val(0);
                             }
                         });
                     } else {
                         $('#view_9999').val(1);
                     }
-                    if (model.RoleName === 'Gerentes') $('#edit_' + model.RoleId).val(1);
-                    initTriStateCheckBox('spanView_' + model.RoleId, 'view_' + model.RoleId, true);
-                    initTriStateCheckBox('spanEdit_' + model.RoleId, 'edit_' + model.RoleId, true);
+                    if (model.RoleName === 'Gerentes') $('#edit_' + model.RoleID).val(1);
+                    initTriStateCheckBox('spanView_' + model.RoleID, 'view_' + model.RoleID, true);
+                    initTriStateCheckBox('spanEdit_' + model.RoleID, 'edit_' + model.RoleID, true);
                 });
                 $('#spanEdit_9999').css({
                     'visibility': 'hidden'
@@ -678,95 +689,91 @@ $(function () {
         var selectedMainCategory = $('#mainCategories').jqxTree('selectedItem');
         //my.vm.parentId(selectedNode.element.id);
 
+        var categorySecurityData = [];
+
+        var grid = $('#groupsGrid').data('kendoGrid');
+        $.each(grid.dataSource.data(), function (i, item) {
+
+            if ($('#view_' + item.RoleID).val() !== '0') {
+                var perm = {};
+                perm.RoleID = item.RoleID;
+                perm.PermissionId = $('#view_' + item.RoleID).val();
+                perm.AllowAccess = $('#view_' + item.RoleID).val() === '1' ? false : true;
+                categorySecurityData.push(perm);    
+            }
+
+            if ($('#edit_' + item.RoleID).val() !== '0') {
+                var perm = {};
+                perm.RoleID = item.RoleID;
+                perm.PermissionId = $('#edit_' + item.RoleID).val(),
+                perm.AllowAccess = $('#edit_' + item.RoleID).val() === '1' ? false : true;
+                categorySecurityData.push(perm);
+            }
+        });
+
         var categoryData = {
-            Lang: 'pt-BR',
-            CategoryName: my.vm.categoryName(),
-            CategoryId: kendo.parseInt(my.vm.categoryId()),
-            ParentCategoryId: my.vm.parentId().toString().replace('ddl_', ''),
-            ProductTemplate: '',
-            ListItemTemplate: '',
-            ListAltItemTemplate: '',
-            SEOPageTitle: my.vm.seoPageTitle(),
-            SEOName: my.vm.seoName(),
-            MetaDescription: my.vm.metaDesc(),
-            MetaKeywords: my.vm.metaKeywords(),
-            ListOrder: my.vm.listOrder(),
-            CategoryDesc: my.vm.categoryDesc(),
-            Message: my.vm.message(),
-            Archived: my.vm.archived(),
-            Hidden: my.vm.hidden(),
-            PortalId: 0,
-            CreatedByUser: _userID,
-            CreatedOnDate: moment().format()
+            lang: 'pt-BR',
+            categoryName: my.vm.categoryName(),
+            categoryId: kendo.parseInt(my.vm.categoryId()),
+            parentCategoryId: my.vm.parentId().toString().replace('ddl_', ''),
+            productTemplate: '',
+            listItemTemplate: '',
+            listAltItemTemplate: '',
+            seoPageTitle: my.vm.seoPageTitle(),
+            seoName: my.vm.seoName(),
+            metaDescription: my.vm.metaDesc(),
+            metaKeywords: my.vm.metaKeywords(),
+            listOrder: my.vm.listOrder(),
+            categoryDesc: my.vm.categoryDesc(),
+            message: my.vm.message(),
+            archived: my.vm.archived(),
+            hidden: my.vm.hidden(),
+            portalId: 0,
+            categorySecurityData: JSON.stringify(categorySecurityData),
+            createdByUser: my.userInfo.UserId,
+            createdOnDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+            modifiedByUser: my.userInfo.UserId,
+            modifiedOnDate: moment().format('YYYY-MM-DD HH:mm:ss')
         };
 
         $.ajax({
+            type: my.vm.categoryId() ? 'PUT' : 'POST',
+            // contentType: 'application/json; charset=utf-8',
             dataType: 'json',
-            type: 'POST',
-            url: '/api/categories/update',
+            url: my.vm.categoryId() ? '/api/categories/update' : '/api/categories/add',
             data: categoryData
         }).done(function (data) {
-            if (data.Result.indexOf("success") !== -1) {
+            if (!data.message) {
                 if (my.vm.categoryId()) {
-                                        
+
                     if (selectedMainCategory) {
-                        $('#mainCategories').jqxTree('updateItem', selectedMainCategory, { label: $('#nameTextBox').val() });
+                        $('#mainCategories').jqxTree('updateItem', selectedMainCategory, {
+                            label: $('#nameTextBox').val()
+                        });
                     }
 
                     var selectedElement = $("#treeViewCategories").jqxTree('getSelectedItem').element;
-                    $('#treeViewCategories').jqxTree('updateItem', selectedElement, { label: $('#nameTextBox').val() });
+                    $('#treeViewCategories').jqxTree('updateItem', selectedElement, {
+                        label: $('#nameTextBox').val()
+                    });
 
                     setTimeout(function () {
                         selectedElement.scrollIntoView();
                     }, 500);
 
-                    var addCategorySecurity = function (args) {
-                        $.ajax({
-                            type: 'POST',
-                            url: '/api/categories/updateSecurity',
-                            data: args
-                        }).fail(function (jqXHR, textStatus) {
-                            console.log(jqXHR.responseText);
-                        });
-                    };
-
-                    var categorySecurityData = {
-                        CategoryId: my.vm.categoryId()
-                    };
-
-                    var grid = $('#groupsGrid').data('kendoGrid');
-                    $.each(grid.dataSource.data(), function (i, item) {
-
-                        if ($('#view_' + item.RoleId).val() !== '0') {
-
-                            categorySecurityData.RoleId = item.RoleId;
-                            categorySecurityData.PermissionId = $('#view_' + item.RoleId).val();
-                            categorySecurityData.AllowAccess = true;
-
-                            addCategorySecurity(categorySecurityData);
-                        }
-
-                        if ($('#edit_' + item.RoleId).val() !== '0') {
-
-                            categorySecurityData.RoleId = item.RoleId;
-                            categorySecurityData.PermissionId = $('#edit_' + item.RoleId).val();
-                            categorySecurityData.AllowAccess = false;
-
-                            addCategorySecurity(categorySecurityData);
-                        }
-                    });
-
-                    //$().toastmessage('showSuccessToast', 'Categoria ' + my.vm.categoryName() + ' atualizada com sucesso.');
-                    $.pnotify({
+                    var notice = new PNotify({
                         title: 'Sucesso!',
                         text: 'Categoria <strong>' + my.vm.categoryName() + '</strong> atualizada.',
                         type: 'success',
-                        icon: 'fa fa-check fa-lg',
-                        addclass: "stack-bottomright",
+                        animation: 'none',
+                        addclass: 'stack-bottomright',
                         stack: my.stack_bottomright
                     });
+                    notice.get().click(function () {
+                        notice.remove();
+                    });
                 } else {
-                    my.vm.categoryId(data.CategoryId);
+                    my.vm.categoryId(Object.values(data).toString());
 
                     if (selectedMainCategory !== null) {
 
@@ -787,7 +794,7 @@ $(function () {
                         }, selectedMainCategory, false);
 
                         //$('#mainCategories').jqxTree('render');
-                        
+
                     } else {
 
                         $('#mainCategories').jqxTree('addTo', {
@@ -814,14 +821,16 @@ $(function () {
 
                     $('#treeViewCategories').jqxTree('selectItem', $('#' + my.vm.categoryId() + '')[0]);
 
-                    //$().toastmessage('showSuccessToast', 'Categoria <strong>' + my.vm.categoryName() + '</strong><br />inserida com sucesso.');
-                    $.pnotify({
+                    var notice = new PNotify({
                         title: 'Sucesso!',
                         text: 'Categoria <strong>' + my.vm.categoryName() + '</strong><br />inserida.',
                         type: 'success',
-                        icon: 'fa fa-check fa-lg',
-                        addclass: "stack-bottomright",
+                        animation: 'none',
+                        addclass: 'stack-bottomright',
                         stack: my.stack_bottomright
+                    });
+                    notice.get().click(function () {
+                        notice.remove();
                     });
                 }
 
@@ -829,15 +838,17 @@ $(function () {
                 menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));
 
             } else {
-                $.pnotify({
+                var notice = new PNotify({
                     title: 'Erro!',
-                    text: data.Result,
+                    text: data.message,
                     type: 'error',
-                    icon: 'fa fa-times-circle fa-lg',
-                    addclass: "stack-bottomright",
+                    animation: 'none',
+                    addclass: 'stack-bottomright',
                     stack: my.stack_bottomright
                 });
-                //$().toastmessage('showErrorToast', data.Result);
+                notice.get().click(function () {
+                    notice.remove();
+                });
             }
         }).fail(function (jqXHR, textStatus) {
             console.log(jqXHR.responseText);
@@ -848,89 +859,93 @@ $(function () {
         e.preventDefault();
 
         var $dialog = $('<div></div>')
-                        .html('<div class="confirmDialog">Tem Certeza?</div>')
-                        .dialog({
-                            autoOpen: false,
-                            modal: true,
-                            resizable: false,
-                            dialogClass: 'dnnFormPopup',
-                            open: function () {
-                                $(".ui-dialog-title").append('Aviso de Exclus&#227;o');
-                            },
-                            buttons: {
-                                'ok': {
-                                    text: 'Sim',
-                                    //priority: 'primary',
-                                    "class": 'dnnPrimaryAction',
-                                    click: function () {
-                                        $.ajax({
-                                            type: 'DELETE',
-                                            url: '/api/categories/removeCategory?catId=' + my.vm.categoryId()
-                                        }).done(function (data) {
-                                            if (data.Result.indexOf("success") !== -1) {
+            .html('<div class="confirmDialog">Tem Certeza?</div>')
+            .dialog({
+                autoOpen: false,
+                modal: true,
+                resizable: false,
+                dialogClass: 'dnnFormPopup',
+                open: function () {
+                    $(".ui-dialog-title").append('Aviso de Exclus&#227;o');
+                },
+                buttons: {
+                    'ok': {
+                        text: 'Sim',
+                        //priority: 'primary',
+                        "class": 'dnnPrimaryAction',
+                        click: function () {
+                            $.ajax({
+                                type: 'DELETE',
+                                url: '/api/categories/removeCategory?catId=' + my.vm.categoryId()
+                            }).done(function (data) {
+                                if (data.Result.indexOf("success") !== -1) {
 
-                                                var selectedElement = $("#treeViewCategories").jqxTree('getSelectedItem').element;
-                                                $('#treeViewCategories').jqxTree('removeItem', selectedElement, true);
+                                    var selectedElement = $("#treeViewCategories").jqxTree('getSelectedItem').element;
+                                    $('#treeViewCategories').jqxTree('removeItem', selectedElement, true);
 
-                                                //setTimeout(function () {
-                                                //$('#treeViewCategories').jqxTree('refresh');
-                                                //$('#treeViewCategories').jqxTree('render');
-                                                //}, 500);
+                                    //setTimeout(function () {
+                                    //$('#treeViewCategories').jqxTree('refresh');
+                                    //$('#treeViewCategories').jqxTree('render');
+                                    //}, 500);
 
-                                                var selectedNode = $('#mainCategories').find('#ddl_' + my.vm.categoryId())[0];
-                                                $('#mainCategories').jqxTree('removeItem', selectedNode, true);
+                                    var selectedNode = $('#mainCategories').find('#ddl_' + my.vm.categoryId())[0];
+                                    $('#mainCategories').jqxTree('removeItem', selectedNode, true);
 
-                                                //setTimeout(function () {
-                                                //    $('#treeViewCategories').jqxTree('render');
-                                                //    $('#mainCategories').jqxTree('render');
-                                                //}, 500);
+                                    //setTimeout(function () {
+                                    //    $('#treeViewCategories').jqxTree('render');
+                                    //    $('#mainCategories').jqxTree('render');
+                                    //}, 500);
 
-                                                //$().toastmessage('showSuccessToast', 'Categoria excluida com sucesso');
-                                                $.pnotify({
-                                                    title: 'Sucesso!',
-                                                    text: 'Categoria <strong>' + $('#nameTextBox').val() + '</strong> excluida.',
-                                                    type: 'success',
-                                                    icon: 'fa fa-check fa-lg',
-                                                    addclass: "stack-bottomright",
-                                                    stack: my.stack_bottomright
-                                                });
+                                    var notice = new PNotify({
+                                        title: 'Sucesso!',
+                                        text: 'Categoria <strong>' + $('#nameTextBox').val() + '</strong> excluida.',
+                                        type: 'success',
+                                        animation: 'none',
+                                        addclass: 'stack-bottomright',
+                                        stack: my.stack_bottomright
+                                    });
+                                    notice.get().click(function () {
+                                        notice.remove();
+                                    });
 
-                                                $('#btnCancel').click();
+                                    $('#btnCancel').click();
 
-                                                $dialog.dialog('close');
-                                                $dialog.dialog('destroy');
-                                            } else {
-                                                $.pnotify({
-                                                    title: 'Erro!',
-                                                    text: data.Result,
-                                                    type: 'error',
-                                                    icon: 'fa fa-times-circle fa-lg',
-                                                    addclass: "stack-bottomright",
-                                                    stack: my.stack_bottomright
-                                                });
-                                                //$().toastmessage('showErrorToast', data.Msg);
-                                            }
-                                        }).fail(function (jqXHR, textStatus) {
-                                            console.log(jqXHR.responseText);
-                                        });
-                                    }
-                                },
-                                'cancel': {
-                                    html: 'N&#227;o',
-                                    //priority: 'secondary',
-                                    "class": 'dnnSecondaryAction',
-                                    click: function () {
-                                        $dialog.dialog('close');
-                                        $dialog.dialog('destroy');
-                                    }
+                                    $dialog.dialog('close');
+                                    $dialog.dialog('destroy');
+                                } else {
+                                    var notice = new PNotify({
+                                        title: 'Erro!',
+                                        text: data,
+                                        type: 'error',
+                                        animation: 'none',
+                                        addclass: 'stack-bottomright',
+                                        stack: my.stack_bottomright
+                                    });
+                                    notice.get().click(function () {
+                                        notice.remove();
+                                    });
                                 }
-                            }
-                        });
+                            }).fail(function (jqXHR, textStatus) {
+                                console.log(jqXHR.responseText);
+                            });
+                        }
+                    },
+                    'cancel': {
+                        html: 'N&#227;o',
+                        //priority: 'secondary',
+                        "class": 'dnnSecondaryAction',
+                        click: function () {
+                            $dialog.dialog('close');
+                            $dialog.dialog('destroy');
+                        }
+                    }
+                }
+            });
 
         $dialog.dialog('open');
     });
 
-    $('#btnAdddProductCategory').click(function (e) {
+    /*$('#btnAdddProductCategory').click(function (e) {
         e.preventDefault();
 
         var params = {
@@ -968,9 +983,9 @@ $(function () {
         }).fail(function (jqXHR, textStatus) {
             console.log(jqXHR.responseText);
         });
-    });
+    });*/
 
-    $('#btnRemoveProductsCategory').click(function (e) {
+    /*$('#btnRemoveProductsCategory').click(function (e) {
         e.preventDefault();
 
         $.ajax({
@@ -1002,7 +1017,7 @@ $(function () {
         }).fail(function (jqXHR, textStatus) {
             console.log(jqXHR.responseText);
         });
-    });
+    });*/
 
     $('#btnCancel').click(function (e) {
         e.preventDefault();

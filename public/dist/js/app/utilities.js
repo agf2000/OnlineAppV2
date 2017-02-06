@@ -587,6 +587,11 @@ jQuery.fn.getCheckboxVal = function () {
     return vals;
 };
 
+my.stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
+my.stack_bottomleft = { "dir1": "up", "dir2": "right", "firstpos1": 25, "firstpos2": 25 };
+my.stack_topleft = { "dir1": "down", "dir2": "right", "push": "top" };
+my.stack_topright = { "dir1": "down", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
+
 var ValidationUtility = function () {
     var validationElements = $('[data-role="validate"]');
     var elementCount;
