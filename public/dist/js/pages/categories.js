@@ -2,6 +2,8 @@
 
 $(function () {
 
+    $(document).ajaxStart(function() { Pace.restart(); });
+
     PNotify.prototype.options.styling = "bootstrap3";
     my.personId = my.getParameterByName('itemId');
     my.cats = null;
@@ -160,6 +162,7 @@ $(function () {
                 source[code] = categoryItems[code];
             }
         });
+        $('.overlay').remove();
         return source;
     };
     my.sourceMenu = my.buildMenudata();
@@ -198,21 +201,22 @@ $(function () {
             my.vm.categoryId(item.id);
             my.loadCatPermissions();
             $.getJSON('/api/categories/' + item.id + '/pt-BR', function (data) {
-                my.vm.hidden(data[0].Hidden);
-                my.vm.message(data[0].Message);
-                my.vm.lang(data[0].Lang);
-                my.vm.archived(data[0].Archived);
-                my.vm.listOrder(data[0].ListOrder);
-                my.vm.categoryName(data[0].CategoryName);
-                my.vm.categoryDesc(data[0].CategoryDesc);
-                my.vm.seoName(data[0].SEOName);
-                my.vm.seoPageTitle(data[0].SEOPageTitle);
-                my.vm.metaDesc(data[0].MetaDescription);
-                my.vm.metaKeywords(data[0].MetaKeywords);
-                my.vm.productCount(data[0].ProductCount);
-                if (data[0].ParentCategoryId > 0) {
+                var category = data[0];
+                my.vm.hidden(category.Hidden);
+                my.vm.message(category.Message);
+                my.vm.lang(category.Lang);
+                my.vm.archived(category.Archived);
+                my.vm.listOrder(category.ListOrder);
+                my.vm.categoryName(category.CategoryName);
+                my.vm.categoryDesc(category.CategoryDesc);
+                my.vm.seoName(category.SeoName);
+                my.vm.seoPageTitle(category.SeoPageTitle);
+                my.vm.metaDesc(category.MetaDescription);
+                my.vm.metaKeywords(category.MetaKeywords);
+                my.vm.productCount(category.ProductCount);
+                if (category.ParentCategoryId > 0) {
                     $('.jqx-dropdownlist-content').removeClass('jqx-dropdownlist-state-normal-placeholder');
-                    my.vm.parentId(data[0].ParentCategoryId);
+                    my.vm.parentId(category.ParentCategoryId);
                     $('#mainCategories').jqxTree('selectItem', $('#ddl_' + my.vm.parentId() + '')[0]);
                 } else {
                     my.vm.parentId(0);

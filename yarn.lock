@@ -289,6 +289,12 @@ function-bind@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.0.tgz#16176714c801798e4e8f2cf7f7529467bb4a5771"
 
+gasparesganga-jquery-loading-overlay@^1.5.3:
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/gasparesganga-jquery-loading-overlay/-/gasparesganga-jquery-loading-overlay-1.5.3.tgz#77ae32c6ecec0c8122e1372ab336292351b4a511"
+  dependencies:
+    jquery ">=1.7.0"
+
 generic-pool@^2.2.0:
   version "2.5.4"
   resolved "https://registry.yarnpkg.com/generic-pool/-/generic-pool-2.5.4.tgz#38c6188513e14030948ec6e5cf65523d9779299b"
@@ -358,6 +364,10 @@ is-buffer@^1.0.2:
 isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
+
+jquery@>=1.7.0:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.1.1.tgz#347c1c21c7e004115e0a4da32cece041fad3c8a3"
 
 kind-of@^3.0.2:
   version "3.1.0"

@@ -37,4 +37,8 @@ router.put('/categories/update', function (req, res) {
 	return categoriesController.updateCategory(req, res, req.body);	
 });
 
+router.delete('/categories/remove/:id', function (req, res) {
+	return categoriesController.removeCategory(req, res, req.query.id);	
+});
+
 module.exports = router;
