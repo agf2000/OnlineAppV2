@@ -13,16 +13,16 @@
                 <h3 class="box-title">Cadastro</h3>
             </div>
             <div class="box-body">
-                <ul id="editCategoryMenu">
-                    <li id="menu_1" title="Retornar" data-bind="visible: my.returnUrl"><i class="icon-chevron-left"></i>&nbsp;Retornar</li>
-                    <li id="menu_2" class="k-state-selected" title="Dados Básicos">Básico</li>
-                    <li id="menu_3" title="Search Engine Optimization">SEO</li>
-                    <li id="menu_4" title="Dados Opcionais">Extra</li>
-                    <li id="menu_6" title="Configurar Permissões">Permissões</li>
+                <!-- Nav tabs -->
+                <ul id="menuTabs" class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#basicEdit" aria-controls="basicEdit" role="tab" data-toggle="tab" title="Dados Básicos">Básico</a></li>
+                    <li role="presentation"><a href="#seoEdit" aria-controls="seoEdit" role="tab" data-toggle="tab" title="Search Engine Optimization">SEO</a></li>
+                    <li role="presentation"><a href="#extraEdit" aria-controls="extraEdit" role="tab" data-toggle="tab" title="Dados Opcionais">Opcionais</a></li>
+                    <li role="presentation"><a href="#permissionEdit" aria-controls="permissionEdit" role="tab" data-toggle="tab" title="Configurar Permissões">Permissões</a></li>
                 </ul>
                 <form role="form">
-                    <div class="margin">
-                        <div id="basicEdit" class="form-horizontal">
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane fade in active" id="basicEdit" aria-labelledby="basic-tab">
                             <div class="form-group">
                                 <label class="required" for="nameTextBox">Nome:</label>
                                 <input id="nameTextBox" class="form-control" type="text" data-bind="value: categoryName, valueUpdate: 'afterkeydown'" required="required" oninvalid="this.setCustomValidity('opção obrigatória')" />
@@ -45,9 +45,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="margin">
-                        <div id="seoEdit" class="form-horizontal">
+                        <div role="tabpanel" class="tab-pane fade" id="seoEdit" aria-labelledby="seo-tab">
                             <div class="form-group">
                                 <label>(SEO) Nome:</label>
                                 <input id="seoNameTextBox" type="text" class="form-control" data-bind="value: seoName" />
@@ -65,11 +63,8 @@
                                 <textarea id="keywordsTextArea" class="form-control" data-bind="text: metaKeywords"></textarea>
                             </div>
                         </div>
-                    </div>
-                    <div class="margin">
-                        <div id="extraEdit" class="form-horizontal">
+                        <div role="tabpanel" class="tab-pane fade" id="extraEdit" aria-labelledby="optional-tab">
                             <div class="form-group">
-                                <div class="padded"></div>
                                 <label for="archivedCheckBox">Arquivado:</label>
                                 <div class="controls">
                                     <input id="archivedCheckBox" type="checkbox" class="normalCheckBox switch-small" data-on-label="SIM" data-off-label="NÃO" data-bind="attr: { 'checked': archived }" />
@@ -95,10 +90,7 @@
                                 <textarea id="editorTextArea" class="form-control" data-bind="text: message"></textarea>
                             </div>
                         </div>
-                    </div>
-                    <div class="margin">
-                        <div id="permissionEdit" class="form-horizontal">
-                            <div class="padded"></div>
+                        <div role="tabpanel" class="tab-pane fade" id="permissionEdit" aria-labelledby="permission-tab">
                             <div class="form-group">
                                 <div id="groupsGrid"></div>
                             </div>
@@ -112,7 +104,7 @@
                 </form>
             </div>
         </div>
-    </div>            
+    </div>
     <div class="overlay">
         <i class="fa fa-refresh fa-spin"></i>
     </div>

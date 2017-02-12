@@ -2,8 +2,6 @@
 
 $(function () {
 
-    $(document).ajaxStart(function() { Pace.restart(); });
-
     PNotify.prototype.options.styling = "bootstrap3";
     my.personId = my.getParameterByName('itemId');
     my.cats = null;
@@ -47,68 +45,15 @@ $(function () {
         });
     };
 
-    // $('.dnnFormHelp').tooltip({ placement: 'right' });
-
-    var menu = $('#editCategoryMenu').kendoMenu({
-        select: function (e) {
-            $("#editCategoryMenu").find(".k-state-selected").removeClass("k-state-selected");
-            switch (e.item.id) {
-                case 'menu_3':
-                    $('#basicEdit').fadeOut();
-                    $('#extraEdit').fadeOut();
-                    $('#productsEdit').fadeOut();
-                    $('#seoEdit').delay(400).fadeIn();
-                    $('#permissionEdit').fadeOut();
-                    $(e.item).addClass("k-state-selected");
-                    break;
-                case 'menu_4':
-                    $('#seoEdit').fadeOut();
-                    $('#basicEdit').fadeOut();
-                    $('#productsEdit').fadeOut();
-                    $('#extraEdit').delay(400).fadeIn();
-                    $('#permissionEdit').fadeOut();
-                    $(e.item).addClass("k-state-selected");
-                    break;
-                case 'menu_5':
-                    $('#seoEdit').fadeOut();
-                    $('#basicEdit').fadeOut();
-                    $('#extraEdit').fadeOut();
-                    $('#permissionEdit').fadeOut();
-                    $('#productsEdit').delay(400).fadeIn();
-                    $(e.item).addClass("k-state-selected");
-                    break;
-                case 'menu_6':
-                    $('#seoEdit').fadeOut();
-                    $('#basicEdit').fadeOut();
-                    $('#extraEdit').fadeOut();
-                    $('#productsEdit').fadeOut();
-                    $('#permissionEdit').delay(400).fadeIn();
-                    $(e.item).addClass("k-state-selected");
-                    break;
-                case "menu_1":
-                    document.location.href = _editItemURL + '?SkinSrc=[G]Skins/riw/popUpSkin&ContainerSrc=[G]Containers/riw/popUpContainer&itemId/' + my.personId;
-                    break;
-                default:
-                    $('#seoEdit').fadeOut();
-                    $('#extraEdit').fadeOut();
-                    $('#productsEdit').fadeOut();
-                    $('#permissionEdit').fadeOut();
-                    $('#basicEdit').delay(400).fadeIn();
-                    $(e.item).addClass("k-state-selected");
-            }
-
-        }
-    }).data("kendoMenu");
+    $('#menuTabs a').click(function (e) {
+        e.preventDefault()
+        $(this).tab('show')
+    });
 
     if (my.vm.categoryId() === 0) {
-        menuItems = $('#editCategoryMenu').find(':gt(2)');
-        menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));
+        /*menuItems = $('#editCategoryMenu').find(':gt(2)');
+        menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));*/
     }
-
-    //if (my.returnUrl === 0) {
-    //    menuItems = $('#editCategoryMenu').find('.k-first');
-    //    menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));
-    //}
 
     my.loadCategories = function () {
         if (!my.cats) {
@@ -195,6 +140,7 @@ $(function () {
 
     $('#treeViewCategories').jqxTree();
     $('#treeViewCategories').on('select', function (event) {
+        Pace.restart();
         var args = event.args;
         var item = $('#treeViewCategories').jqxTree('getItem', args.element);
         if (item.id !== '0999999999') {
@@ -203,7 +149,6 @@ $(function () {
             $.getJSON('/api/categories/' + item.id + '/pt-BR', function (data) {
                 var category = data[0];
                 my.vm.hidden(category.Hidden);
-                my.vm.message(category.Message);
                 my.vm.lang(category.Lang);
                 my.vm.archived(category.Archived);
                 my.vm.listOrder(category.ListOrder);
@@ -223,11 +168,12 @@ $(function () {
                     my.dropDownContent = '<div style="position: relative; margin-left: 5px; margin-top: 6px; color: #999; font-style: italic;"> Selecionar</div>';
                     $('#availCategoriesButton').jqxDropDownButton('setContent', my.dropDownContent);
                 }
+                // Pace.done();
             });
             //my.categoryProductsData.read();
 
-            var menuItems = $('#editCategoryMenu').find('.k-state-disabled');
-            menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));
+            /*var menuItems = $('#editCategoryMenu').find('.k-state-disabled');
+            menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));*/
 
             $('#groupsGrid').data('kendoGrid').dataSource.read();
             //setTimeout(function () {
@@ -703,14 +649,14 @@ $(function () {
                 perm.RoleID = item.RoleID;
                 perm.PermissionId = $('#view_' + item.RoleID).val();
                 perm.AllowAccess = $('#view_' + item.RoleID).val() === '1' ? false : true;
-                categorySecurityData.push(perm);    
+                categorySecurityData.push(perm);
             }
 
             if ($('#edit_' + item.RoleID).val() !== '0') {
                 var perm = {};
                 perm.RoleID = item.RoleID;
                 perm.PermissionId = $('#edit_' + item.RoleID).val(),
-                perm.AllowAccess = $('#edit_' + item.RoleID).val() === '1' ? false : true;
+                    perm.AllowAccess = $('#edit_' + item.RoleID).val() === '1' ? false : true;
                 categorySecurityData.push(perm);
             }
         });
@@ -729,7 +675,6 @@ $(function () {
             metaKeywords: my.vm.metaKeywords(),
             listOrder: my.vm.listOrder(),
             categoryDesc: my.vm.categoryDesc(),
-            message: my.vm.message(),
             archived: my.vm.archived(),
             hidden: my.vm.hidden(),
             portalId: 0,
@@ -838,8 +783,8 @@ $(function () {
                     });
                 }
 
-                var menuItems = $('#editCategoryMenu').find('.k-state-disabled');
-                menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));
+                /*var menuItems = $('#editCategoryMenu').find('.k-state-disabled');
+                menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));*/
 
             } else {
                 var notice = new PNotify({
@@ -862,91 +807,76 @@ $(function () {
     $('#btnRemove').click(function (e) {
         e.preventDefault();
 
-        var $dialog = $('<div></div>')
-            .html('<div class="confirmDialog">Tem Certeza?</div>')
-            .dialog({
-                autoOpen: false,
-                modal: true,
-                resizable: false,
-                dialogClass: 'dnnFormPopup',
-                open: function () {
-                    $(".ui-dialog-title").append('Aviso de Exclus&#227;o');
-                },
-                buttons: {
-                    'ok': {
-                        text: 'Sim',
-                        //priority: 'primary',
-                        "class": 'dnnPrimaryAction',
-                        click: function () {
-                            $.ajax({
-                                type: 'DELETE',
-                                url: '/api/categories/removeCategory?catId=' + my.vm.categoryId()
-                            }).done(function (data) {
-                                if (data.Result.indexOf("success") !== -1) {
+        swal({
+            title: "Atenção!",
+            html: "Tem certeza que deseja excluir esta categoria?",
+            type: "warning",
+            cancelButtonText: "Cancelar",
+            showCancelButton: true,
+            reverseButtons: true,
+            confirmButtonText: "Sim, excluir"
+        }).then(function (isConfirm) {
+            if (isConfirm) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/api/categories/remove/' + my.vm.categoryId()
+                }).done(function (data) {
+                    if (!data.message) {
 
-                                    var selectedElement = $("#treeViewCategories").jqxTree('getSelectedItem').element;
-                                    $('#treeViewCategories').jqxTree('removeItem', selectedElement, true);
+                        var selectedElement = $("#treeViewCategories").jqxTree('getSelectedItem').element;
+                        $('#treeViewCategories').jqxTree('removeItem', selectedElement, true);
 
-                                    //setTimeout(function () {
-                                    //$('#treeViewCategories').jqxTree('refresh');
-                                    //$('#treeViewCategories').jqxTree('render');
-                                    //}, 500);
+                        var selectedNode = $('#mainCategories').find('#ddl_' + my.vm.categoryId())[0];
+                        $('#mainCategories').jqxTree('removeItem', selectedNode, true);
 
-                                    var selectedNode = $('#mainCategories').find('#ddl_' + my.vm.categoryId())[0];
-                                    $('#mainCategories').jqxTree('removeItem', selectedNode, true);
+                        var notice = new PNotify({
+                            title: 'Sucesso!',
+                            text: 'Categoria <strong>' + $('#nameTextBox').val() + '</strong> excluida.',
+                            type: 'success',
+                            animation: 'none',
+                            addclass: 'stack-bottomright',
+                            stack: my.stack_bottomright
+                        });
+                        notice.get().click(function () {
+                            notice.remove();
+                        });
 
-                                    //setTimeout(function () {
-                                    //    $('#treeViewCategories').jqxTree('render');
-                                    //    $('#mainCategories').jqxTree('render');
-                                    //}, 500);
+                        $('#btnCancel').click();
 
-                                    var notice = new PNotify({
-                                        title: 'Sucesso!',
-                                        text: 'Categoria <strong>' + $('#nameTextBox').val() + '</strong> excluida.',
-                                        type: 'success',
-                                        animation: 'none',
-                                        addclass: 'stack-bottomright',
-                                        stack: my.stack_bottomright
-                                    });
-                                    notice.get().click(function () {
-                                        notice.remove();
-                                    });
-
-                                    $('#btnCancel').click();
-
-                                    $dialog.dialog('close');
-                                    $dialog.dialog('destroy');
-                                } else {
-                                    var notice = new PNotify({
-                                        title: 'Erro!',
-                                        text: data,
-                                        type: 'error',
-                                        animation: 'none',
-                                        addclass: 'stack-bottomright',
-                                        stack: my.stack_bottomright
-                                    });
-                                    notice.get().click(function () {
-                                        notice.remove();
-                                    });
-                                }
-                            }).fail(function (jqXHR, textStatus) {
-                                console.log(jqXHR.responseText);
-                            });
-                        }
-                    },
-                    'cancel': {
-                        html: 'N&#227;o',
-                        //priority: 'secondary',
-                        "class": 'dnnSecondaryAction',
-                        click: function () {
-                            $dialog.dialog('close');
-                            $dialog.dialog('destroy');
-                        }
+                    } else {
+                        var notice = new PNotify({
+                            title: 'Erro!',
+                            text: data,
+                            type: 'error',
+                            animation: 'none',
+                            addclass: 'stack-bottomright',
+                            stack: my.stack_bottomright
+                        });
+                        notice.get().click(function () {
+                            notice.remove();
+                        });
                     }
-                }
-            });
-
-        $dialog.dialog('open');
+                }).fail(function (jqXHR, textStatus) {
+                    console.log(jqXHR.responseText);
+                });
+            }
+        }, function (dismiss) {
+            // dismiss can be 'cancel', 'overlay',
+            // 'close', and 'timer'
+            if (dismiss === 'cancel') {
+                var notice = new PNotify({
+                    title: 'Atenção!',
+                    text: 'Nada foi excluido',
+                    type: 'info',
+                    animation: 'none',
+                    addclass: 'stack-bottomright',
+                    stack: my.stack_bottomright
+                });
+                notice.get().click(function () {
+                    notice.remove();
+                });
+            }
+        });
     });
 
     /*$('#btnAdddProductCategory').click(function (e) {
@@ -1029,7 +959,6 @@ $(function () {
         $('#btnCancel').hide();
         $('#btnRemove').hide();
         my.vm.hidden(false);
-        my.vm.message('');
         my.vm.lang('pt-BR');
         my.vm.archived(false);
         my.vm.listOrder(1);
@@ -1045,8 +974,8 @@ $(function () {
         my.vm.catPermissions.removeAll();
         my.dropDownContent = '<div style="position: relative; margin-left: 5px; margin-top: 6px; color: #999; font-style: italic;"> Selecionar</div>';
         $('#availCategoriesButton').jqxDropDownButton('setContent', my.dropDownContent);
-        var categoryMenuItems = $('#editCategoryMenu').find(':not(.k-first)');
-        menu.enable(categoryMenuItems, categoryMenuItems.hasClass('k-state-disabled'));
+        // var categoryMenuItems = $('#editCategoryMenu').find(':not(.k-first)');
+        // menu.enable(categoryMenuItems, categoryMenuItems.hasClass('k-state-disabled'));
         $('#treeViewCategories').jqxTree('selectItem', $('#tvCategories').find('#0999999999')[0]);
         $('#nameTextBox').focus();
     });

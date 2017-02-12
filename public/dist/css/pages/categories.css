@@ -1,9 +1,5 @@
 #btnCancel,
-#btnRemove,
-#permissionEdit,
-#seoEdit,
-#productsEdit,
-#extraEdit {
+#btnRemove {
     display: none;
 }
 
