@@ -29,6 +29,42 @@ $(function () {
     $('#archivedCheckBox').bootstrapSwitch();
     $('#hiddenCheckBox').bootstrapSwitch();
 
+    $("#files").fileinput({
+        uploadUrl: "/api/file", // server upload action
+        uploadAsync: false,
+        minFileCount: 1,
+        maxFileCount: 1,
+        initialPreviewAsData: true, // identify if you are sending preview data only and not the markup
+        language: "pt-BR",
+        allowedFileExtensions: ["jpg", "png"],
+        uploadExtraData: {
+            createdByUserId: my.userInfo.UserId,
+            createdOnDate: moment().format()
+        }
+    });
+
+    $('#files').on('filepreajax', function (event, previewId, index) {
+        console.log('File pre ajax triggered');
+    });
+
+    $('#files').on('filepreupload', function (event, data, previewId, index) {
+        var form = data.form, files = data.files, extra = data.extra,
+            response = data.response, reader = data.reader;
+        console.log('File pre upload triggered');
+    });
+
+    // $('#files').on('filepredelete', function (event, key) {
+    //     console.log('Key = ' + key);
+    // });
+
+    // $('#files').on('filedeleted', function (event, key) {
+    //     console.log('Key = ' + key);
+    // });
+
+    // $('#files').on('filesuccessremove', function (event, id) {
+    //     console.log('Uploaded thumbnail successfully removed');
+    // });
+
     my.loadCatPermissions = function () {
         $.getJSON('/api/categories/getCategoryPermissions?categoryId=' + my.vm.categoryId(), function (data) {
             if (data) {
@@ -230,84 +266,7 @@ $(function () {
 
     $('.jqx-dropdownlist-content').addClass('jqx-dropdownlist-state-normal-placeholder');
 
-    $('#files').kendoUpload({
-        async: {
-            saveUrl: "/desktopmodules/riw/api/store/SaveFile",
-            removeUrl: "/desktopmodules/riw/api/store/RemovePortalFile",
-            autoUpload: false,
-            multiple: false
-        },
-        //showFileList: false,
-        localization: {
-            cancel: 'Cancelar',
-            dropFilesHere: 'Arraste arquivos aqui para envia-los',
-            remove: 'Remover',
-            select: 'Anexar Imagem',
-            statusUploading: 'Enviando Arquivo(s)',
-            uploadSelectedFiles: 'Enviar Arquivo(s)'
-        },
-        select: function (e) {
-            $.each(e.files, function (index, value) {
-                if (value.extension.toUpperCase() !== '.JPG' && value.extension.toUpperCase() !== '.PNG' && value.extension.toUpperCase() !== '.DOC' && value.extension.toUpperCase() !== '.PDF' && value.extension.toUpperCase() !== '.DOCX' && value.extension.toUpperCase() !== '.GIF' && value.extension.toUpperCase() !== '.ZIP' && value.extension.toUpperCase() !== '.RAR') {
-                    e.preventDefault();
-                    //$().toastmessage('showWarningToast', 'É permitido enviar somente arquivos com formato jpg e png.');
-                    var notice = new PNotify({
-                        title: 'Aten&#231;&#227;o!',
-                        text: '&#201; permitido enviar somente arquivos com formato jpg e png.',
-                        type: 'success',
-                        animation: 'none',
-                        addclass: 'stack-bottomright',
-                        stack: my.stack_bottomright
-                    });
-                    notice.get().click(function () {
-                        notice.remove();
-                    });
-                }
-            });
-        },
-        upload: function (e) {
-            e.data = {
-                portalId: 0,
-                maxWidth: 0,
-                maxHeight: 0,
-                folderPath: $('#folderPathTextBox').val()
-            };
-        },
-        success: function (e) {
-            var _fileInfo = e.response.fileInfo;
-            //$.each(e.files, function (index, value) {
-            my.vm.portalFiles.unshift(new my.PortalFile()
-                .fileId(_fileInfo.FileId)
-                .fileName(_fileInfo.FileName)
-                .contenType(_fileInfo.ContentType)
-                .extension(_fileInfo.Extension)
-                .fileSize('Tamanho: ' + my.size_format(_fileInfo.Size))
-                .height(_fileInfo.Height)
-                .relativePath(_fileInfo.Extension === 'jpg' || _fileInfo.Extension === 'png' || _fileInfo.Extension === 'gif' ? '/portals/0/' + _fileInfo.RelativePath : '/desktopmodules/riw/webapi/content/images/spacer.gif')
-                .width(_fileInfo.Width));
-            //});
-            //});
-            $(".k-widget.k-upload").find("ul").remove();
-        },
-        remove: function (e) {
-
-        },
-        error: function (e) {
-            var notice = new PNotify({
-                title: 'Erro!',
-                text: 'N&#227;o foi possível o envio do arquivo.',
-                type: 'error',
-                animation: 'none',
-                addclass: 'stack-bottomright',
-                stack: my.stack_bottomright
-            });
-            notice.get().click(function () {
-                notice.remove();
-            });
-        }
-    });
-
-    $('#editorTextArea').kendoEditor({
+    /*$('#editorTextArea').kendoEditor({
         messages: {
             bold: "Bold",
             italic: "Italic",
@@ -370,13 +329,13 @@ $(function () {
             "unlink",
             "viewHtml"
         ]
-    });
+    });*/
 
-    $('#btnUpload').click(function (e) {
+    /*$('#btnUpload').click(function (e) {
         e.preventDefault();
 
         $('#files').click();
-    });
+    });*/
 
     /*$("#productSearch").kendoAutoComplete({
         delay: 500,
@@ -661,33 +620,41 @@ $(function () {
             }
         });
 
-        var categoryData = {
-            lang: 'pt-BR',
-            categoryName: my.vm.categoryName(),
-            categoryId: kendo.parseInt(my.vm.categoryId()),
-            parentCategoryId: my.vm.parentId().toString().replace('ddl_', ''),
-            productTemplate: '',
-            listItemTemplate: '',
-            listAltItemTemplate: '',
-            seoPageTitle: my.vm.seoPageTitle(),
-            seoName: my.vm.seoName(),
-            metaDescription: my.vm.metaDesc(),
-            metaKeywords: my.vm.metaKeywords(),
-            listOrder: my.vm.listOrder(),
-            categoryDesc: my.vm.categoryDesc(),
-            archived: my.vm.archived(),
-            hidden: my.vm.hidden(),
-            portalId: 0,
-            categorySecurityData: JSON.stringify(categorySecurityData),
-            createdByUser: my.userInfo.UserId,
-            createdOnDate: moment().format('YYYY-MM-DD HH:mm:ss'),
-            modifiedByUser: my.userInfo.UserId,
-            modifiedOnDate: moment().format('YYYY-MM-DD HH:mm:ss')
-        };
+        var categoryData = new FormData();
+
+        categoryData.append('lang', 'pt-BR');
+        categoryData.append('categoryName', my.vm.categoryName());
+        categoryData.append('categoryId', kendo.parseInt(my.vm.categoryId()));
+        categoryData.append('parentCategoryId', my.vm.parentId().toString().replace('ddl_', ''));
+        categoryData.append('productTemplate', '');
+        categoryData.append('listItemTemplate', '');
+        categoryData.append('listAltItemTemplate', '');
+        categoryData.append('seoPageTitle', my.vm.seoPageTitle());
+        categoryData.append('seoName', my.vm.seoName());
+        categoryData.append('metaDescription', my.vm.metaDesc());
+        categoryData.append('metaKeywords', my.vm.metaKeywords());
+        categoryData.append('listOrder', my.vm.listOrder());
+        categoryData.append('categoryDesc', my.vm.categoryDesc());
+        categoryData.append('archived', my.vm.archived());
+        categoryData.append('hidden', my.vm.hidden());
+        categoryData.append('portalId', 0);
+        categoryData.append('categorySecurityData', JSON.stringify(categorySecurityData));
+        categoryData.append('createdByUser', my.userInfo.UserId);
+        categoryData.append('createdOnDate', moment().format('YYYY-MM-DD HH:mm:ss'));
+        categoryData.append('modifiedByUser', my.userInfo.UserId);
+        categoryData.append('modifiedOnDate', moment().format('YYYY-MM-DD HH:mm:ss'));
+        
+        $.each($('#files')[0].files, function (i, file) {
+            categoryData.append('categoryImage', file);
+        });
 
         $.ajax({
             type: my.vm.categoryId() ? 'PUT' : 'POST',
             // contentType: 'application/json; charset=utf-8',
+            // contentType: "multipart/form-data; ",
+            // cache: false,
+            contentType: false,
+            processData: false,
             dataType: 'json',
             url: my.vm.categoryId() ? '/api/categories/update' : '/api/categories/add',
             data: categoryData

@@ -151,14 +151,14 @@ exports.addCategory = function (req, res, reqBody) {
     }
 };
 
-exports.updateCategory = function (req, res, reqBody) {
+exports.updateCategory = function (req, res, reqBody, fileName) {
     try {
         if (!reqBody) throw new Error("Input not valid");
         var data = reqBody;
         if (data) {
-            var sqlInst = util.format("update categories set portalid = %d, archived = '%s', parentcategoryid = %d, " +
-                "listorder = %d, [hidden] = '%s', modifiedbyuser = %d, modifiedondate = '%s' where categoryid = %d ", data.portalId,
-                data.archived, data.parentCategoryId, data.listOrder, data.hidden, data.modifiedByUser, data.modifiedOnDate, data.categoryId);
+            var sqlInst = util.format("update categories set portalid = %d, archived = '%s', parentcategoryid = %d, listorder = %d, " +
+                "[hidden] = '%s', imageFile = '%s', modifiedbyuser = %d, modifiedondate = '%s' where categoryid = %d ", data.portalId,
+                data.archived, data.parentCategoryId, data.listOrder, data.hidden, fileName, data.modifiedByUser, data.modifiedOnDate, data.categoryId);
             sqlInst += util.format("update categorylang set lang = '%s', categoryname = '%s', categorydesc = '%s', seoname = '%s', " +
                 "metadescription = '%s', metakeywords = '%s', seopagetitle = '%s' where categoryid = %d ", data.lang, data.categoryName, data.categoryDesc, 
                 (data.seoName || data.categoryName), data.metaDescription, data.metaKeywords, (data.seoPageTitle || data.categoryName), data.categoryId);

@@ -1,9 +1,26 @@
 var express = require("express");
+var multer = require("multer");
+var uuid = require("uuid");
+var fs = require("fs");
 var categoriesController = require("../controllers/categoriesController.js");
 var productsController = require("../controllers/productsController.js");
 var storeController = require("../controllers/storeController.js");
 
 var router = express.Router();
+
+var storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, 'public/uploads')
+	},
+	filename: function (req, file, cb) {
+		var ext = file.originalname.substr(file.originalname.lastIndexOf('.') + 1);
+		cb(null, uuid.v4() + '.' + ext);
+	}
+});
+
+var upload = multer({
+	storage: storage
+});
 
 router.get("/getUserInfo", function (req, res) {
 	res.json(res.locals.user);
@@ -30,15 +47,20 @@ router.get('/store/roles/:portalId', function (req, res) {
 });
 
 router.post('/categories/add', function (req, res) {
-	return categoriesController.addCategory(req, res, req.body);	
+	return categoriesController.addCategory(req, res, req.body);
 });
 
-router.put('/categories/update', function (req, res) {
-	return categoriesController.updateCategory(req, res, req.body);	
+router.post('/file', upload.single('files'), function (req, res, next) { 
+	console.log(req.file);
+	return storeController.saveFile(req, res, req.file);
+});
+
+router.put('/categories/update', upload.single('files'), function (req, res, next) {
+	return categoriesController.updateCategory(req, res, req.body, req.file.filename);
 });
 
 router.delete('/categories/remove/:id', function (req, res) {
-	return categoriesController.removeCategory(req, res, req.params.id);	
+	return categoriesController.removeCategory(req, res, req.params.id);
 });
 
 module.exports = router;
