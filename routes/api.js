@@ -46,17 +46,16 @@ router.get('/store/roles/:portalId', function (req, res) {
 	storeController.getRoles(req, res, req.params.portalId);
 });
 
-router.post('/categories/add', function (req, res) {
-	return categoriesController.addCategory(req, res, req.body);
+router.post('/categories/add', upload.single('files'), function (req, res) {
+	categoriesController.addCategory(req, res, req.body, (req.file ? req.file.filename : null));
 });
 
 router.post('/file', upload.single('files'), function (req, res, next) { 
-	console.log(req.file);
 	return storeController.saveFile(req, res, req.file);
 });
 
 router.put('/categories/update', upload.single('files'), function (req, res, next) {
-	return categoriesController.updateCategory(req, res, req.body, req.file.filename);
+	return categoriesController.updateCategory(req, res, req.body, (req.file ? req.file.filename : null));
 });
 
 router.delete('/categories/remove/:id', function (req, res) {

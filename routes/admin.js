@@ -22,12 +22,12 @@ router.get('/categorias', function (req, res, next) {
 		title: 'Categorias',
 		css: [
 			'/dist/css/pages/categories.css',
-			'/plugins/bootstrap-switch/bootstrap-switch.min.css',
+			'/plugins/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css',
 			'/plugins/jqwidgets/styles/jqx.base.css',
 			'/plugins/bootstrap-fileinput/css/fileinput.min.css'
 		],
 		script: [
-			'/dist/js/app/utilities.js',
+			'/plugins/bootstrap-validator/dist/validator.min.js',
 			'/plugins/jqwidgets/jqxcore.js',
 			'/plugins/jqwidgets/jqxdropdownbutton.js',
 			'/plugins/jqwidgets/jqxtree.js',
@@ -37,13 +37,14 @@ router.get('/categorias', function (req, res, next) {
 			'/plugins/jqwidgets/jqxbuttons.js',
 			'/plugins/knockout/knockout-3.4.0.js',
 			'/plugins/tristate-checkbox/js/tristate.min.js',
-			'/plugins/bootstrap-switch/bootstrap-switch.min.js',
+			'/plugins/bootstrap-switch/js/bootstrap-switch.min.js',
 			'/plugins/bootstrap-fileinput/js/plugins/canvas-to-blob.min.js',
 			'/plugins/bootstrap-fileinput/js/plugins/sortable.min.js',
 			'/plugins/bootstrap-fileinput/js/plugins/purify.min.js',
 			'/plugins/bootstrap-fileinput/js/plugins/sortable.min.js',
 			'/plugins/bootstrap-fileinput/js/fileinput.min.js',
 			'/plugins/bootstrap-fileinput/js/locales/pt-BR.js',
+			'/dist/js/app/utilities.js',
 			'/dist/js/pages/categoriesViewModel.js',
 			'/dist/js/pages/categories.js'
 		]

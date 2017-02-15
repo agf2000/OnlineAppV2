@@ -14,93 +14,89 @@
             </div>
             <div class="box-body">
                 <!-- Nav tabs -->
-                <ul id="menuTabs" class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#basicEdit" aria-controls="basicEdit" role="tab" data-toggle="tab" title="Dados Básicos">Básico</a></li>
-                    <li role="presentation"><a href="#seoEdit" aria-controls="seoEdit" role="tab" data-toggle="tab" title="Search Engine Optimization">SEO</a></li>
-                    <li role="presentation"><a href="#extraEdit" aria-controls="extraEdit" role="tab" data-toggle="tab" title="Dados Opcionais">Opcionais</a></li>
-                    <li role="presentation"><a href="#permissionEdit" aria-controls="permissionEdit" role="tab" data-toggle="tab" title="Configurar Permissões">Permissões</a></li>
-                </ul>
-                <form role="form" id="categoryForm" enctype="multipart/form-data">
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane fade in active" id="basicEdit" aria-labelledby="basic-tab">
-                            <div class="form-group">
-                                <label class="required" for="nameTextBox">Nome:</label>
-                                <input id="nameTextBox" name="nameTextBox" class="form-control" type="text" data-bind="value: categoryName, valueUpdate: 'afterkeydown'" required="required" oninvalid="this.setCustomValidity('opção obrigatória')" />
-                                <span data-bind="text: 'ID: ' + categoryId(), visible: categoryId() > 0"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="descTextArea">Descrição:</label>
-                                <textarea id="descTextArea" class="form-control" data-bind="value: categoryDesc"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="orderTextBox">Ordem:</label>
-                                <input id="orderTextBox" type="number" data-bind="value: listOrder" class="form-control" val />
-                            </div>
-                            <div class="form-group">
-                                <label>Categoria:</label>
-                                <div class="controls">
-                                    <div id="availCategoriesButton">
-                                        <div style="border: none;" id="mainCategories"></div>
+                <form role="form" id="categoryForm" enctype="multipart/form-data" data-toggle="validator">
+                    <div class="nav-tabs-custom">
+                        <ul id="menuTabs" class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active"><a href="#basicEdit" aria-controls="basicEdit" role="tab" data-toggle="tab" title="Dados Básicos">Básico</a></li>
+                            <li role="presentation"><a href="#seoEdit" aria-controls="seoEdit" role="tab" data-toggle="tab" title="Search Engine Optimization">SEO</a></li>
+                            <li role="presentation"><a href="#extraEdit" aria-controls="extraEdit" role="tab" data-toggle="tab" title="Dados Opcionais">Opcionais</a></li>
+                            <li role="presentation"><a href="#permissionEdit" aria-controls="permissionEdit" role="tab" data-toggle="tab" title="Configurar Permissões">Permissões</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane fade in active" id="basicEdit" aria-labelledby="basic-tab">
+                                <div class="form-group has-feedback">
+                                    <label class="required" for="nameTextBox">Nome:</label>
+                                    <input id="nameTextBox" name="categoryName" class="form-control" type="text" required placeholder="Nome da categoria ou grupo" />
+                                    <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                    <span data-bind="text: 'ID: ' + categoryId(), visible: categoryId() > 0"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="descTextArea">Descrição:</label>
+                                    <textarea id="descTextArea" name="categoryDesc" class="form-control" placeholder="Uma breve descrição sobre a categoria ou grupo"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="orderTextBox">Ordem:</label>
+                                    <input id="orderTextBox" name="listOrder" type="number" class="form-control" value="1" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Categoria:</label>
+                                    <div class="controls">
+                                        <div id="availCategoriesButton">
+                                            <div style="border: none;" id="mainCategories"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div role="tabpanel" class="tab-pane fade" id="seoEdit" aria-labelledby="seo-tab">
-                            <div class="form-group">
-                                <label>(SEO) Nome:</label>
-                                <input id="seoNameTextBox" type="text" class="form-control" data-bind="value: seoName" />
-                            </div>
-                            <div class="form-group">
-                                <label>Título da Página:</label>
-                                <input id="titlePageTextBox" type="text" class="form-control" data-bind="value: seoPageTitle" />
-                            </div>
-                            <div class="form-group">
-                                <label>(Metatag) Descrição:</label>
-                                <textarea id="metaDescTextArea" class="form-control" data-bind="text: metaDesc"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="keywordsTextBox">(Metatag) Palavras Chave:</label>
-                                <textarea id="keywordsTextArea" class="form-control" data-bind="text: metaKeywords"></textarea>
-                            </div>
-                        </div>
-                        <div role="tabpanel" class="tab-pane fade" id="extraEdit" aria-labelledby="optional-tab">
-                            <div class="form-group">
-                                <label for="archivedCheckBox">Arquivado:</label>
-                                <div class="controls">
-                                    <input id="archivedCheckBox" type="checkbox" class="normalCheckBox switch-small" data-on-label="SIM" data-off-label="NÃO" data-bind="attr: { 'checked': archived }" />
+                            <div role="tabpanel" class="tab-pane fade" id="seoEdit" aria-labelledby="seo-tab">
+                                <div class="form-group">
+                                    <label>(SEO) Nome:</label>
+                                    <input id="seoNameTextBox" name="seoName" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Título da Página:</label>
+                                    <input id="titlePageTextBox" name="seoPageTitle" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label>(Metatag) Descrição:</label>
+                                    <textarea id="metaDescTextArea" name="metaDescription" class="form-control"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="keywordsTextBox">(Metatag) Palavras Chave:</label>
+                                    <textarea id="keywordsTextArea" name="metaKeywords" class="form-control"></textarea>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="hiddenCategory">Escondido:</label>
-                                <div class="controls">
-                                    <input id="hiddenCheckBox" type="checkbox" class="normalCheckBox switch-small" data-on-label="SIM" data-off-label="NÃO" data-bind="attr: { 'checked': hidden }" />
+                            <div role="tabpanel" class="tab-pane fade" id="extraEdit" aria-labelledby="optional-tab">
+                                <div class="form-group">
+                                    <label for="archivedCheckBox">Arquivado:</label>
+                                    <div class="controls">
+                                        <input id="archivedCheckBox" name="archived" type="checkbox" class="normalCheckBox switch-small" data-on-label="SIM" data-off-label="NÃO" />
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="files">Imagem:</label>
-                                <div class="controls">
-                                    <div class="">
+                                <div class="form-group">
+                                    <label for="hiddenCategory">Escondido:</label>
+                                    <div class="controls">
+                                        <input id="hiddenCheckBox" name="hidden" type="checkbox" class="normalCheckBox switch-small" data-on-label="SIM" data-off-label="NÃO" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="files">Imagem:</label>
+                                    <div class="controls">
                                         <input id="files" name="files" type="file" class="file-loading" data-show-upload="false" data-show-caption="true">
                                     </div>
-                                    <button id="btnUpload" class="btn hidden">Anexar Imagem</button>
                                 </div>
                             </div>
-                            <div class="form-group hidden">
-                                <label for="editorTextArea">Mensagem:</label>
-                                <textarea id="editorTextArea" class="form-control" data-bind="text: message"></textarea>
+                            <div role="tabpanel" class="tab-pane fade" id="permissionEdit" aria-labelledby="permission-tab">
+                                <div class="form-group">
+                                    <div id="groupsGrid"></div>
+                                </div>
                             </div>
                         </div>
-                        <div role="tabpanel" class="tab-pane fade" id="permissionEdit" aria-labelledby="permission-tab">
-                            <div class="form-group">
-                                <div id="groupsGrid"></div>
-                            </div>
-                        </div>
+                        <p>
+                            <button type="submit" id="btnUpdateCategory" class="btn btn-small btn-primary margin"><i class="fa fa-check"></i>&nbsp; Adicionar</button>
+                            <button id="btnCancel" class="btn btn-small margin"><i class="fa fa-chevron-left"></i>&nbsp; Retornar</button>
+                            <button id="btnRemove" class="btn btn-small btn-danger margin"><i class="fa fa-times"></i>&nbsp; Excluir</button>
+                        </p>
                     </div>
-                    <p>
-                        <button id="btnUpdateCategory" class="btn btn-small btn-info margin" data-loading-text="<i class='fa fa-spinner fa-spin'></i>&nbsp; Um momento..." data-bind="html: setButton, enable: categoryName().length"></button>
-                        <button id="btnCancel" class="btn btn-small margin"><i class="fa fa-chevron-left"></i>&nbsp;Retornar</button>
-                        <button id="btnRemove" class="btn btn-small btn-danger margin"><i class="fa fa-times"></i>&nbsp; Excluir</button>
-                    </p>
                 </form>
             </div>
         </div>

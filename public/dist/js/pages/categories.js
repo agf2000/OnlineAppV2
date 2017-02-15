@@ -7,7 +7,7 @@ $(function () {
     my.cats = null;
     my.returnUrl = my.getParameterByName('return');
     var menuItems = null;
-
+    $.fn.validator.Constructor.INPUT_SELECTOR = ':input([type="file"])'
     my.userInfo = JSON.parse(Cookies.getJSON('OnlineUser').replace('j:', ''));
 
     // VIEW MODEL
@@ -30,9 +30,9 @@ $(function () {
     $('#hiddenCheckBox').bootstrapSwitch();
 
     $("#files").fileinput({
-        uploadUrl: "/api/file", // server upload action
+        // uploadUrl: "/api/file", // server upload action
         uploadAsync: false,
-        minFileCount: 1,
+        minFileCount: 0,
         maxFileCount: 1,
         initialPreviewAsData: true, // identify if you are sending preview data only and not the markup
         language: "pt-BR",
@@ -184,17 +184,26 @@ $(function () {
             my.loadCatPermissions();
             $.getJSON('/api/categories/' + item.id + '/pt-BR', function (data) {
                 var category = data[0];
-                my.vm.hidden(category.Hidden);
-                my.vm.lang(category.Lang);
-                my.vm.archived(category.Archived);
-                my.vm.listOrder(category.ListOrder);
-                my.vm.categoryName(category.CategoryName);
-                my.vm.categoryDesc(category.CategoryDesc);
-                my.vm.seoName(category.SeoName);
-                my.vm.seoPageTitle(category.SeoPageTitle);
-                my.vm.metaDesc(category.MetaDescription);
-                my.vm.metaKeywords(category.MetaKeywords);
-                my.vm.productCount(category.ProductCount);
+                // my.vm.hidden(category.Hidden);
+                // my.vm.lang(category.Lang);
+                // my.vm.archived(category.Archived);
+                // my.vm.listOrder(category.ListOrder);
+                // my.vm.categoryName(category.CategoryName);
+                // my.vm.categoryDesc(category.CategoryDesc);
+                // my.vm.seoName(category.SeoName);
+                // my.vm.seoPageTitle(category.SeoPageTitle);
+                // my.vm.metaDesc(category.MetaDescription);
+                // my.vm.metaKeywords(category.MetaKeywords);
+                // my.vm.productCount(category.ProductCount);
+                $('#hiddenCheckBox').bootstrapSwitch('state', category.Hidden);
+                $('#archivedCheckBox').bootstrapSwitch('state', category.Archived);
+                $('#nameTextBox').val(category.CategoryName);
+                $('#descTextArea').val(category.CategoryDesc);
+                $('#orderTextBox').val(category.ListOrder);
+                $('#seoNameTextBox').val(category.SeoName);
+                $('#titlePageTextBox').val(category.SeoPageTitle);
+                $('#metaDescTextArea').val(category.MetaDescription);
+                $('#keywordsTextArea').val(category.MetaKeywords);
                 if (category.ParentCategoryId > 0) {
                     $('.jqx-dropdownlist-content').removeClass('jqx-dropdownlist-state-normal-placeholder');
                     my.vm.parentId(category.ParentCategoryId);
@@ -592,155 +601,216 @@ $(function () {
         }
     });
 
-    $('#btnUpdateCategory').click(function (e) {
-        e.preventDefault();
+    $('#categoryForm').validator().on('submit', function (e) {
+        if (e.isDefaultPrevented()) {
+        } else {
+            e.preventDefault();
 
-        var selectedMainCategory = $('#mainCategories').jqxTree('selectedItem');
-        //my.vm.parentId(selectedNode.element.id);
+            var selectedMainCategory = $('#mainCategories').jqxTree('selectedItem');
+            //my.vm.parentId(selectedNode.element.id);
 
-        var categorySecurityData = [];
+            var categorySecurityData = [];
 
-        var grid = $('#groupsGrid').data('kendoGrid');
-        $.each(grid.dataSource.data(), function (i, item) {
+            var grid = $('#groupsGrid').data('kendoGrid');
+            $.each(grid.dataSource.data(), function (i, item) {
 
-            if ($('#view_' + item.RoleID).val() !== '0') {
-                var perm = {};
-                perm.RoleID = item.RoleID;
-                perm.PermissionId = $('#view_' + item.RoleID).val();
-                perm.AllowAccess = $('#view_' + item.RoleID).val() === '1' ? false : true;
-                categorySecurityData.push(perm);
-            }
+                if ($('#view_' + item.RoleID).val() !== '0') {
+                    var perm = {};
+                    perm.RoleID = item.RoleID;
+                    perm.PermissionId = $('#view_' + item.RoleID).val();
+                    perm.AllowAccess = $('#view_' + item.RoleID).val() === '1' ? false : true;
+                    categorySecurityData.push(perm);
+                }
 
-            if ($('#edit_' + item.RoleID).val() !== '0') {
-                var perm = {};
-                perm.RoleID = item.RoleID;
-                perm.PermissionId = $('#edit_' + item.RoleID).val(),
-                    perm.AllowAccess = $('#edit_' + item.RoleID).val() === '1' ? false : true;
-                categorySecurityData.push(perm);
-            }
-        });
+                if ($('#edit_' + item.RoleID).val() !== '0') {
+                    var perm = {};
+                    perm.RoleID = item.RoleID;
+                    perm.PermissionId = $('#edit_' + item.RoleID).val(),
+                        perm.AllowAccess = $('#edit_' + item.RoleID).val() === '1' ? false : true;
+                    categorySecurityData.push(perm);
+                }
+            });
 
-        var categoryData = new FormData();
+            // var categoryData = new FormData();
 
-        categoryData.append('lang', 'pt-BR');
-        categoryData.append('categoryName', my.vm.categoryName());
-        categoryData.append('categoryId', kendo.parseInt(my.vm.categoryId()));
-        categoryData.append('parentCategoryId', my.vm.parentId().toString().replace('ddl_', ''));
-        categoryData.append('productTemplate', '');
-        categoryData.append('listItemTemplate', '');
-        categoryData.append('listAltItemTemplate', '');
-        categoryData.append('seoPageTitle', my.vm.seoPageTitle());
-        categoryData.append('seoName', my.vm.seoName());
-        categoryData.append('metaDescription', my.vm.metaDesc());
-        categoryData.append('metaKeywords', my.vm.metaKeywords());
-        categoryData.append('listOrder', my.vm.listOrder());
-        categoryData.append('categoryDesc', my.vm.categoryDesc());
-        categoryData.append('archived', my.vm.archived());
-        categoryData.append('hidden', my.vm.hidden());
-        categoryData.append('portalId', 0);
-        categoryData.append('categorySecurityData', JSON.stringify(categorySecurityData));
-        categoryData.append('createdByUser', my.userInfo.UserId);
-        categoryData.append('createdOnDate', moment().format('YYYY-MM-DD HH:mm:ss'));
-        categoryData.append('modifiedByUser', my.userInfo.UserId);
-        categoryData.append('modifiedOnDate', moment().format('YYYY-MM-DD HH:mm:ss'));
-        
-        $.each($('#files')[0].files, function (i, file) {
-            categoryData.append('categoryImage', file);
-        });
+            // categoryData.append('lang', 'pt-BR');
+            // categoryData.append('categoryName', my.vm.categoryName());
+            // categoryData.append('categoryId', kendo.parseInt(my.vm.categoryId()));
+            // categoryData.append('parentCategoryId', my.vm.parentId().toString().replace('ddl_', ''));
+            // categoryData.append('productTemplate', '');
+            // categoryData.append('listItemTemplate', '');
+            // categoryData.append('listAltItemTemplate', '');
+            // categoryData.append('seoPageTitle', my.vm.seoPageTitle());
+            // categoryData.append('seoName', my.vm.seoName());
+            // categoryData.append('metaDescription', $('#metaDescTextArea').val());
+            // categoryData.append('metaKeywords', $('#keywordsTextArea').val());
+            // categoryData.append('listOrder', my.vm.listOrder());
+            // categoryData.append('categoryDesc', $('#descTextArea').val());
+            // categoryData.append('archived', my.vm.archived());
+            // categoryData.append('hidden', my.vm.hidden());
+            // categoryData.append('portalId', 0);
+            // categoryData.append('categorySecurityData', JSON.stringify(categorySecurityData));
+            // categoryData.append('createdByUser', my.userInfo.UserId);
+            // categoryData.append('createdOnDate', moment().format('YYYY-MM-DD HH:mm:ss'));
+            // categoryData.append('modifiedByUser', my.userInfo.UserId);
+            // categoryData.append('modifiedOnDate', moment().format('YYYY-MM-DD HH:mm:ss'));
 
-        $.ajax({
-            type: my.vm.categoryId() ? 'PUT' : 'POST',
-            // contentType: 'application/json; charset=utf-8',
-            // contentType: "multipart/form-data; ",
-            // cache: false,
-            contentType: false,
-            processData: false,
-            dataType: 'json',
-            url: my.vm.categoryId() ? '/api/categories/update' : '/api/categories/add',
-            data: categoryData
-        }).done(function (data) {
-            if (!data.message) {
-                if (my.vm.categoryId()) {
+            // $.each($('#files')[0].files, function (i, file) {
+            //     categoryData.append('files', file);
+            // });
 
-                    if (selectedMainCategory) {
-                        $('#mainCategories').jqxTree('updateItem', selectedMainCategory, {
+            // var categoryData = {
+            //     'lang': 'pt-BR',
+            //     'categoryName': my.vm.categoryName(),
+            //     'categoryId': kendo.parseInt(my.vm.categoryId()),
+            //     'parentCategoryId': my.vm.parentId().toString().replace('ddl_', ''),
+            //     'productTemplate': '',
+            //     'listItemTemplate': '',
+            //     'listAltItemTemplate': '',
+            //     'seoPageTitle': my.vm.seoPageTitle(),
+            //     'seoName': my.vm.seoName(),
+            //     'metaDescription': $('#metaDescTextArea').val(),
+            //     'metaKeywords': $('#keywordsTextArea').val(),
+            //     'listOrder': my.vm.listOrder(),
+            //     'categoryDesc': $('#descTextArea').val(),
+            //     'archived': my.vm.archived(),
+            //     'hidden': my.vm.hidden(),
+            //     'portalId': 0,
+            //     'categorySecurityData': JSON.stringify(categorySecurityData),
+            //     'createdByUser': my.userInfo.UserId,
+            //     'createdOnDate': moment().format('YYYY-MM-DD HH:mm:ss'),
+            //     'modifiedByUser': my.userInfo.UserId,
+            //     'modifiedOnDate': moment().format('YYYY-MM-DD HH:mm:ss')
+            // }
+
+            // $.each($('#files')[0].files, function (i, file) {
+            //     categoryData.files  = file;
+            // });
+
+            var categoryData = new FormData($('#categoryForm')[0]);
+
+            categoryData.append('categoryId', my.vm.categoryId());
+            categoryData.append('categorySecurityData', JSON.stringify(categorySecurityData));
+            categoryData.append('lang', 'pt-BR');
+            categoryData.append('portalId', 0);
+            categoryData.append('parentCategoryId', my.vm.parentId());
+            categoryData.append('hidden', $('#hiddenCheckBox').bootstrapSwitch('state'));
+            categoryData.append('archived', $('#archivedCheckBox').bootstrapSwitch('state'));
+            categoryData.append('createdByUser', my.userInfo.UserId);
+            categoryData.append('createdOnDate', moment().format('YYYY-MM-DD HH:mm:ss'));
+            categoryData.append('modifiedByUser', my.userInfo.UserId);
+            categoryData.append('modifiedOnDate', moment().format('YYYY-MM-DD HH:mm:ss'));
+
+            $.ajax({
+                type: my.vm.categoryId() ? 'PUT' : 'POST',
+                // contentType: 'application/json; charset=utf-8',
+                // contentType: "multipart/form-data; ",
+                // cache: false,
+                contentType: false,
+                processData: false,
+                dataType: 'json',
+                url: my.vm.categoryId() ? '/api/categories/update' : '/api/categories/add',
+                data: categoryData
+            }).done(function (data) {
+                if (!data.message) {
+                    if (my.vm.categoryId()) {
+
+                        if (selectedMainCategory) {
+                            $('#mainCategories').jqxTree('updateItem', selectedMainCategory, {
+                                label: $('#nameTextBox').val()
+                            });
+                        }
+
+                        var selectedElement = $("#treeViewCategories").jqxTree('getSelectedItem').element;
+                        $('#treeViewCategories').jqxTree('updateItem', selectedElement, {
                             label: $('#nameTextBox').val()
+                        });
+
+                        setTimeout(function () {
+                            selectedElement.scrollIntoView();
+                        }, 500);
+
+                        var notice = new PNotify({
+                            title: 'Sucesso!',
+                            text: 'Categoria <strong>' + my.vm.categoryName() + '</strong> atualizada.',
+                            type: 'success',
+                            animation: 'none',
+                            addclass: 'stack-bottomright',
+                            stack: my.stack_bottomright
+                        });
+                        notice.get().click(function () {
+                            notice.remove();
+                        });
+                    } else {
+                        my.vm.categoryId(Object.values(data).toString());
+
+                        if (selectedMainCategory !== null) {
+
+                            var selectedItem = null;
+                            if (my.vm.parentId().toString().replace('ddl_', '')) {
+                                selectedItem = $('#treeViewCategories').find('#' + my.vm.parentId().toString().replace('ddl_', '') + '')[0];
+                            }
+                            $('#treeViewCategories').jqxTree('addTo', {
+                                label: $('#nameTextBox').val(),
+                                id: my.vm.categoryId()
+                            }, selectedItem, false);
+
+                            //    var selectedMainItem = null;
+                            //    selectedMainItem = $('#mainCategories').find('#' + my.vm.parentId() + '')[0];
+                            $('#mainCategories').jqxTree('addTo', {
+                                label: $('#nameTextBox').val(),
+                                id: 'ddl_' + my.vm.categoryId()
+                            }, selectedMainCategory, false);
+
+                            //$('#mainCategories').jqxTree('render');
+
+                        } else {
+
+                            $('#mainCategories').jqxTree('addTo', {
+                                label: $('#nameTextBox').val(),
+                                id: 'ddl_' + my.vm.categoryId()
+                            }, null, false);
+
+                            $('#treeViewCategories').jqxTree('addTo', {
+                                label: $('#nameTextBox').val(),
+                                id: my.vm.categoryId()
+                            }, null, false);
+                        }
+
+                        $('#mainCategories').jqxTree('render');
+
+                        $('#treeViewCategories').jqxTree('render');
+
+                        //setTimeout(function () {
+                        var itemToExpand = $('#treeViewCategories').jqxTree('getItem', $('#' + my.vm.parentId() + '')[0]);
+                        if (itemToExpand !== null) {
+                            $('#treeViewCategories').jqxTree('expandItem', itemToExpand.element);
+                        };
+                        //}, 1000);
+
+                        $('#treeViewCategories').jqxTree('selectItem', $('#' + my.vm.categoryId() + '')[0]);
+
+                        var notice = new PNotify({
+                            title: 'Sucesso!',
+                            text: 'Categoria <strong>' + $('#nameTextBox').val() + '</strong><br />inserida.',
+                            type: 'success',
+                            animation: 'none',
+                            addclass: 'stack-bottomright',
+                            stack: my.stack_bottomright
+                        });
+                        notice.get().click(function () {
+                            notice.remove();
                         });
                     }
 
-                    var selectedElement = $("#treeViewCategories").jqxTree('getSelectedItem').element;
-                    $('#treeViewCategories').jqxTree('updateItem', selectedElement, {
-                        label: $('#nameTextBox').val()
-                    });
+                    /*var menuItems = $('#editCategoryMenu').find('.k-state-disabled');
+                    menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));*/
 
-                    setTimeout(function () {
-                        selectedElement.scrollIntoView();
-                    }, 500);
-
-                    var notice = new PNotify({
-                        title: 'Sucesso!',
-                        text: 'Categoria <strong>' + my.vm.categoryName() + '</strong> atualizada.',
-                        type: 'success',
-                        animation: 'none',
-                        addclass: 'stack-bottomright',
-                        stack: my.stack_bottomright
-                    });
-                    notice.get().click(function () {
-                        notice.remove();
-                    });
                 } else {
-                    my.vm.categoryId(Object.values(data).toString());
-
-                    if (selectedMainCategory !== null) {
-
-                        var selectedItem = null;
-                        if (my.vm.parentId().toString().replace('ddl_', '')) {
-                            selectedItem = $('#treeViewCategories').find('#' + my.vm.parentId().toString().replace('ddl_', '') + '')[0];
-                        }
-                        $('#treeViewCategories').jqxTree('addTo', {
-                            label: my.vm.categoryName(),
-                            id: my.vm.categoryId()
-                        }, selectedItem, false);
-
-                        //    var selectedMainItem = null;
-                        //    selectedMainItem = $('#mainCategories').find('#' + my.vm.parentId() + '')[0];
-                        $('#mainCategories').jqxTree('addTo', {
-                            label: my.vm.categoryName(),
-                            id: 'ddl_' + my.vm.categoryId()
-                        }, selectedMainCategory, false);
-
-                        //$('#mainCategories').jqxTree('render');
-
-                    } else {
-
-                        $('#mainCategories').jqxTree('addTo', {
-                            label: my.vm.categoryName(),
-                            id: 'ddl_' + my.vm.categoryId()
-                        }, null, false);
-
-                        $('#treeViewCategories').jqxTree('addTo', {
-                            label: my.vm.categoryName(),
-                            id: my.vm.categoryId()
-                        }, null, false);
-                    }
-
-                    $('#mainCategories').jqxTree('render');
-
-                    $('#treeViewCategories').jqxTree('render');
-
-                    //setTimeout(function () {
-                    var itemToExpand = $('#treeViewCategories').jqxTree('getItem', $('#' + my.vm.parentId() + '')[0]);
-                    if (itemToExpand !== null) {
-                        $('#treeViewCategories').jqxTree('expandItem', itemToExpand.element);
-                    };
-                    //}, 1000);
-
-                    $('#treeViewCategories').jqxTree('selectItem', $('#' + my.vm.categoryId() + '')[0]);
-
                     var notice = new PNotify({
-                        title: 'Sucesso!',
-                        text: 'Categoria <strong>' + my.vm.categoryName() + '</strong><br />inserida.',
-                        type: 'success',
+                        title: 'Erro!',
+                        text: data.message,
+                        type: 'error',
                         animation: 'none',
                         addclass: 'stack-bottomright',
                         stack: my.stack_bottomright
@@ -749,26 +819,10 @@ $(function () {
                         notice.remove();
                     });
                 }
-
-                /*var menuItems = $('#editCategoryMenu').find('.k-state-disabled');
-                menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));*/
-
-            } else {
-                var notice = new PNotify({
-                    title: 'Erro!',
-                    text: data.message,
-                    type: 'error',
-                    animation: 'none',
-                    addclass: 'stack-bottomright',
-                    stack: my.stack_bottomright
-                });
-                notice.get().click(function () {
-                    notice.remove();
-                });
-            }
-        }).fail(function (jqXHR, textStatus) {
-            console.log(jqXHR.responseText);
-        });
+            }).fail(function (jqXHR, textStatus) {
+                console.log(jqXHR.responseText);
+            });
+        }
     });
 
     $('#btnRemove').click(function (e) {

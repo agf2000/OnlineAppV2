@@ -115,17 +115,41 @@ exports.getCategory = function (req, res, categoryId, lang) {
     }
 };
 
-exports.addCategory = function (req, res, reqBody) {
+exports.addCategory = function (req, res, reqBody, fileName) {
     try {
         if (!reqBody) throw new Error("Input not valid");
         var data = reqBody;
         if (data) {
-            var sqlInst = "declare @id int insert into categories (portalid, archived, createdbyuser, createdondate, parentcategoryid, listorder) ";
-            sqlInst += util.format("values (%d, '%s', %d, '%s', %d, %d) set @id = scope_identity() ",
-                data.portalId, data.archived, data.createdByUser, data.createdOnDate, data.parentCategoryId, data.listOrder);
-            sqlInst += "insert into categorylang (categoryid, lang, categoryname, categorydesc, seoname, seopagetitle, metadescription, metakeywords) ";
-            sqlInst += util.format("values (@id, '%s', '%s', '%s', '%s', '%s') ", data.lang, data.categoryName, data.categoryDesc, +
-                data.categoryName, data.categoryName, data.metaDescription, data.metaKeywords);
+            var sqlInst = "declare @id int insert into categories (portalid, ";
+            if (data.archived !== '') {
+                sqlInst += "archived, "
+            }
+            if (data.hidden !== '') {
+                sqlInst += "archived, "
+            }
+            sqlInst += "parentcategoryid, listorder, ";
+            if (fileName) {
+                sqlInst += "imageFile, ";
+            }
+            sqlInst += "createdbyuser, createdondate) ";
+            sqlInst += util.format("values (%d, '%s', '%s', %d, %d, '%s', %d, '%s') set @id = scope_identity() ",
+                data.portalId, data.archived, data.hidden, data.parentCategoryId, data.listOrder, fileName, data.createdByUser, data.createdOnDate);
+            sqlInst += "insert into categorylang (categoryid, lang, categoryname, ";
+            if (data.categoryDesc !== '') {
+                sqlInst += "categorydesc, "
+            }
+            sqlInst += "seoname, seopagetitle, ";
+            if (data.categoryDesc !== '') {
+                sqlInst += "metadescription, "
+            }
+            if (data.categoryDesc !== '') {
+                sqlInst += "metakeywords, "
+            }
+            sqlInst += ") ";
+            
+            sqlInst += util.format("values (@id, '%s', '%s', '%s', '%s', '%s', '%s', '%s') ", data.lang, data.categoryName, 
+                (data.categoryDesc || null), (data.seoName || data.categoryName), (data.seoPageTitle || data.categoryName), 
+                (data.metaDescription || null), (data.metaKeywords || null));
             if (data.categorySecurityData) {
                 var permissions = JSON.parse(data.categorySecurityData);
                 permissions.forEach(function (perm) {
@@ -176,7 +200,7 @@ exports.updateCategory = function (req, res, reqBody, fileName) {
                 if (err) {
                     res.send(err);
                 } else {
-                    res.send('[{ "Result": "success" }]');
+                    res.send('{ "Result": "success" }');
                 }
             });
         } else {
@@ -198,7 +222,7 @@ exports.removeCategory = function (req, res, categoryId) {
             if (err) {
                 res.send(err);
             } else {
-                res.send('[{ "Result": "success" }]');
+                res.send('{ "Result": "success" }');
             }
         });
     } catch (ex) {
