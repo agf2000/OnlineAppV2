@@ -6,3 +6,7 @@
 #treeViewCategories.jqx-widget-content {
     border: none !important;
 }
+
+.treeViewCategories {
+    min-height: 300px;
+}

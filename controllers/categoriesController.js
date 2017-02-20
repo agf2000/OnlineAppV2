@@ -5,28 +5,18 @@ exports.getCategories = function (req, res, portalId, lang, parentCategoryId, fi
     try {
         var sqlInst = "";
 
+        sqlInst = "select c.[categoryid], cl.[lang], cl.[categoryname], cl.[categorydesc], cl.[message], c.[portalid], c.[archived], c.[hidden], c.[createdbyuser], ";
+        sqlInst += "c.[createdondate], c.[modifiedbyuser], c.[modifiedondate], c.[parentcategoryid],pcl.[categoryname] as parentname, c.[listorder], c.[producttemplate], ";
+        sqlInst += "c.[listitemtemplate], c.[listaltitemtemplate], c.[imageurl], cl.[seopagetitle], cl.[seoname], cl.[metadescription], cl.[metakeywords], ";
+        sqlInst += "(select count(pc.[productid]) from dbo.[productcategory] as pc where pc.[categoryid] = c.[categoryid]) as productcount ";
+        sqlInst += "from dbo.[categories] as c left outer join dbo.[categorylang] as cl on cl.[categoryid] = c.[categoryid] and cl.[lang] = 'pt-br' ";
+        sqlInst += "left outer join dbo.[categories] as pc on c.[parentcategoryid] = pc.[categoryid] ";
+        sqlInst += "left outer join dbo.[categorylang] as pcl on pcl.[categoryid] = pc.[categoryid] and pcl.[lang] = 'pt-br' where c.[portalid] = " + portalId;
+        sqlInst += " and (c.[archived] = " + archived + " or " + includeIsArchived + " = 1) and (isnull(c.[hidden], 0) = 0 or " + includeIsArchived + " = 1) ";
         if (parentCategoryId) {
-            sqlInst = "select c.*, cl.Lang, cl.CategoryName, cl.CategoryDesc, cl.SeoPageTitle, cl.SeoName, cl.MetaDescription, cl.MetaKeywords, ";
-            sqlInst += "(select count(pc.productid) from productcategory pc where pc.categoryid = c.categoryid) as ProductCount, ";
-            sqlInst += "pcl.CategoryName as ParentName from categories c ";
-            sqlInst += " left outer join categorylang cl on cl.categoryid = c.categoryid and cl.lang = '" + lang + "' ";
-            sqlInst += " left outer join categories pc on pc.parentcategoryid = c.categoryid ";
-            sqlInst += " left outer join categorylang pcl on pcl.categoryid = pc.categoryid and pcl.lang = '" + lang + "' ";
-            sqlInst += " where c.portalid = " + portalId + " and (c.archived = " + archived + " or " + includeIsArchived + " = 1) ";
-            sqlInst += " and (isnull(c.hidden, 0) = 0 or " + includeIsArchived + " = 1) ";
             sqlInst += " and c.parentcategoryid = " + parentCategoryId;
-            sqlInst += " order by pc.listorder, pcl.categoryname, c.listorder, cl.categoryname";
-        } else {
-            sqlInst = "select c.*, cl.Lang, cl.CategoryName, cl.CategoryDesc, cl.SeoPageTitle, cl.SeoName, cl.MetaDescription, cl.MetaKeywords, ";
-            sqlInst += "(select count(pc.productid) from productcategory pc where pc.categoryid = c.categoryid) as ProductCount, ";
-            sqlInst += "pcl.CategoryName as ParentName from categories c ";
-            sqlInst += " left outer join categorylang cl on cl.categoryid = c.categoryid and cl.lang = '" + lang + "' ";
-            sqlInst += " left outer join categories pc on pc.parentcategoryid = c.categoryid ";
-            sqlInst += " left outer join categorylang pcl on pcl.categoryid = pc.categoryid and pcl.lang = '" + lang + "' ";
-            sqlInst += " where c.portalid = " + portalId + " and (c.archived = " + archived + " or " + includeIsArchived + " = 1) ";
-            sqlInst += " and (isnull(c.hidden, 0) = 0 or " + includeIsArchived + " = 1) ";
-            sqlInst += " order by pc.listorder, pcl.categoryname, c.listorder, cl.categoryname";
         }
+        sqlInst += "order by pc.[listorder], pcl.[categoryname], c.[listorder], cl.[categoryname]";
 
         db.querySql(sqlInst,
             function (data, err) {
@@ -84,11 +74,13 @@ exports.getCategoriesPermissions = function (req, res, categoryId) {
 
 exports.getCategory = function (req, res, categoryId, lang) {
     try {
-        var sqlInst = "select c.*, cl.Lang, cl.CategoryName, cl.CategoryDesc, cl.SeoPageTitle, cl.SeoName, ";
-        sqlInst += "cl.MetaDescription, cl.MetaKeywords, (select count(pc.productid) from productcategory pc where pc.categoryid = c.categoryid) as ProductCount, ";
-        sqlInst += "pcl.categoryname as ParentName from categories c inner join categorylang cl on cl.categoryid = c.categoryid and cl.lang = '" + lang + "' ";
-        sqlInst += "left outer join categories pc on c.parentcategoryid = pc.categoryid left outer join categorylang pcl on pcl.categoryid = pc.categoryid and pcl.lang = '" + lang + "' ";
-        sqlInst += "where c.categoryid = " + categoryId;
+        var sqlInst = "select c.[categoryid], cl.[lang], cl.[categoryname], cl.[categorydesc], cl.[message], c.[portalid], c.[archived], c.[hidden], c.[createdbyuser], ";
+        sqlInst += "c.[createdondate], c.[modifiedbyuser], c.[modifiedondate], c.[parentcategoryid], pcl.[categoryname] as parentname, c.[listorder], c.[producttemplate], ";
+        sqlInst += "(select count(pc.[productid]) from dbo.[productcategory] as pc where  pc.[categoryid] = c.[categoryid]) as productcount, c.[listitemtemplate], ";
+        sqlInst += "c.[imageurl], c.[listaltitemtemplate], cl.[seopagetitle], cl.[seoname], cl.[metadescription], cl.[metakeywords] from dbo.[categories] as c "
+        sqlInst += "inner join dbo.[categorylang] as cl on cl.[categoryid] = c.[categoryid] and cl.[lang] = '" + lang + "' ";
+        sqlInst += "left outer join dbo.[categories] as pc on c.[parentcategoryid] = pc.[categoryid] ";
+        sqlInst += "left outer join dbo.[categorylang] as pcl on pcl.[categoryid] = pc.[categoryid] and pcl.[lang] = '" + lang + "' where  c.[categoryid] = " + categoryId;
 
         db.querySql(sqlInst,
             function (data, err) {
@@ -120,44 +112,19 @@ exports.addCategory = function (req, res, reqBody, fileName) {
         if (!reqBody) throw new Error("Input not valid");
         var data = reqBody;
         if (data) {
-            var sqlInst = "declare @id int insert into categories (portalid, ";
-            if (data.archived !== '') {
-                sqlInst += "archived, "
-            }
-            if (data.hidden !== '') {
-                sqlInst += "archived, "
-            }
-            sqlInst += "parentcategoryid, listorder, ";
-            if (fileName) {
-                sqlInst += "imageFile, ";
-            }
-            sqlInst += "createdbyuser, createdondate) ";
-            sqlInst += util.format("values (%d, '%s', '%s', %d, %d, '%s', %d, '%s') set @id = scope_identity() ",
-                data.portalId, data.archived, data.hidden, data.parentCategoryId, data.listOrder, fileName, data.createdByUser, data.createdOnDate);
-            sqlInst += "insert into categorylang (categoryid, lang, categoryname, ";
-            if (data.categoryDesc !== '') {
-                sqlInst += "categorydesc, "
-            }
-            sqlInst += "seoname, seopagetitle, ";
-            if (data.categoryDesc !== '') {
-                sqlInst += "metadescription, "
-            }
-            if (data.categoryDesc !== '') {
-                sqlInst += "metakeywords, "
-            }
-            sqlInst += ") ";
-            
-            sqlInst += util.format("values (@id, '%s', '%s', '%s', '%s', '%s', '%s', '%s') ", data.lang, data.categoryName, 
-                (data.categoryDesc || null), (data.seoName || data.categoryName), (data.seoPageTitle || data.categoryName), 
-                (data.metaDescription || null), (data.metaKeywords || null));
+            var sqlInst = "declare @id int insert into categories ([portalid], [archived], [createdbyuser], [createdondate], [parentcategoryid], [listorder], [hidden], [imagefile]) ";
+            sqlInst += util.format("values (%d, '%s', %d, '%s', %d, %d, '%s', '%s') set @id = scope_identity() ",
+                data.portalId, data.archived, data.createdByUser, data.createdOnDate, data.parentCategoryId, data.listOrder, data.hidden, fileName);
+            sqlInst += "insert into categorylang ([categoryid], [lang], [categoryname], [categorydesc], [seoname], [metadescription], [metakeywords], [seopagetitle]) ";
+            sqlInst += util.format("values (@id, '%s', '%s', '%s', '%s', '%s', '%s', '%s') ", data.lang, data.categoryName, data.categoryDesc,
+                data.seoName, data.metaDescription, data.metaKeywords, data.seoPageTitle);
             if (data.categorySecurityData) {
                 var permissions = JSON.parse(data.categorySecurityData);
                 permissions.forEach(function (perm) {
-                    sqlInst += util.format("insert into categoryPermission (categoryid, permissionid, roleid, allowaccess) values (@id, %d, %d, '%s') ",
-                        perm.PermissionId, perm.RoleID, perm.AllowAccess);
+                    sqlInst += util.format("insert into categoryPermission (categoryid, permissionid, roleid, canedit) values (@id, %d, %d, '%s') ",
+                        perm.PermissionId, perm.RoleID, perm.CanEdit);
                 });
             }
-            // sqlInst += "insert into categoryPermission (categoryid, permissionid, roleid, allowaccess) values (@id, 1, 1, 0) ";
             sqlInst += "select @id as CategoryId";
 
             db.querySql(sqlInst, function (data, err) {
@@ -184,15 +151,15 @@ exports.updateCategory = function (req, res, reqBody, fileName) {
                 "[hidden] = '%s', imageFile = '%s', modifiedbyuser = %d, modifiedondate = '%s' where categoryid = %d ", data.portalId,
                 data.archived, data.parentCategoryId, data.listOrder, data.hidden, fileName, data.modifiedByUser, data.modifiedOnDate, data.categoryId);
             sqlInst += util.format("update categorylang set lang = '%s', categoryname = '%s', categorydesc = '%s', seoname = '%s', " +
-                "metadescription = '%s', metakeywords = '%s', seopagetitle = '%s' where categoryid = %d ", data.lang, data.categoryName, data.categoryDesc, 
+                "metadescription = '%s', metakeywords = '%s', seopagetitle = '%s' where categoryid = %d ", data.lang, data.categoryName, data.categoryDesc,
                 (data.seoName || data.categoryName), data.metaDescription, data.metaKeywords, (data.seoPageTitle || data.categoryName), data.categoryId);
 
             if (data.categorySecurityData) {
                 var permissions = JSON.parse(data.categorySecurityData);
                 sqlInst += "delete from categoryPermission where categoryid = " + data.categoryId;
                 permissions.forEach(function (perm) {
-                    sqlInst += util.format("insert into categoryPermission (categoryid, permissionid, roleid, allowaccess) values (%d, %d, %d, '%s') ",
-                        data.categoryId, perm.PermissionId, perm.RoleID, perm.AllowAccess);
+                    sqlInst += util.format("insert into categoryPermission (categoryid, permissionid, roleid, canedit) values (%d, %d, %d, '%s') ",
+                        data.categoryId, perm.PermissionId, perm.RoleID, perm.CanEdit);
                 });
             }
 

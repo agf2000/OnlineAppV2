@@ -17,17 +17,54 @@ router.get('/', function (req, res, next) {
 });
 
 /* GET categories page. */
+router.get('/clientes', function (req, res, next) {
+	res.render('people', {
+		title: 'Clientes',
+		css: [
+			'/plugins/datatables/dataTables.bootstrap.css',
+			'/plugins/datatables/extensions/select-1.2.0/css/select.dataTables.min.css',
+			'/plugins/datatables/extensions/select-1.2.0/css/select.bootstrap.min.css',
+			'/plugins/datatables/extensions/Scroller-1.4.2/css/scroller.dataTables.min.css',
+			'/plugins/datatables/extensions/Scroller-1.4.2/css/scroller.bootstrap.min.css',
+			'/plugins/datatables/extensions/buttons-1.2.4/css/buttons.dataTables.min.css',
+			'/plugins/datatables/extensions/buttons-1.2.4/css/buttons.bootstrap.min.css',
+			'/dist/css/pages/people.css'
+		],
+		script: [
+			'/plugins/datatables/jquery.dataTables.min.js',
+			'/plugins/datatables/dataTables.bootstrap.min.js',
+			'/plugins/datatables/extensions/select-1.2.0/js/dataTables.select.min.js',
+			'/plugins/datatables/extensions/Scroller-1.4.2/js/dataTables.scroller.min.js',
+			'/plugins/datatables/extensions/buttons-1.2.4/js/dataTables.buttons.min.js',
+			'/plugins/datatables/extensions/buttons-1.2.4/js/buttons.bootstrap.min.js',
+			'/plugins/datatables/extensions/buttons-1.2.4/js/buttons.html5.min.js',
+			'/plugins/datatables/extensions/jszip-2.5.0/jszip.min.js',
+			'/plugins/datatables/extensions/pdfmake-0.1.18/build/pdfmake.min.js',
+			'/plugins/datatables/extensions/pdfmake-0.1.18/build/vfs_fonts.js',
+			'/plugins/datatables/extensions/buttons-1.2.4/js/buttons.print.min.js',
+			'/plugins/datatables/extensions/buttons-1.2.4/js/buttons.colVis.min.js',
+			'/dist/js/pages/people.js'
+		]
+	});
+});
+
+/* GET categories page. */
 router.get('/categorias', function (req, res, next) {
 	res.render('categories', {
 		title: 'Categorias',
 		css: [
-			'/dist/css/pages/categories.css',
+			'/plugins/kendo/2017.1.118/styles/kendo.common.min.css',
+			'/plugins/kendo/2017.1.118/styles/kendo.uniform.min.css',
 			'/plugins/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css',
 			'/plugins/jqwidgets/styles/jqx.base.css',
-			'/plugins/bootstrap-fileinput/css/fileinput.min.css'
+			'/plugins/bootstrap-fileinput/css/fileinput.min.css',
+			'/plugins/bootstrap-validator/dist/css/bootstrapValidator.min.css',
+			'/dist/css/pages/categories.css',
 		],
 		script: [
-			'/plugins/bootstrap-validator/dist/validator.min.js',
+			'/plugins/kendo/2017.1.118/js/kendo.web.min.js',
+			'/plugins/bootstrap-validator/dist/js/bootstrapValidator.min.js',
+			'/plugins/bootstrap-validator/dist/js/language/pt_BR.js',
 			'/plugins/jqwidgets/jqxcore.js',
 			'/plugins/jqwidgets/jqxdropdownbutton.js',
 			'/plugins/jqwidgets/jqxtree.js',

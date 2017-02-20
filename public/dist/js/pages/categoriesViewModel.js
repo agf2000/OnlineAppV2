@@ -6,7 +6,7 @@ my.viewModel = function () {
         this.CategoryId = ko.observable();
         this.PermissionId = ko.observable();
         this.RoleId = ko.observable();
-        this.AllowAccess = ko.observable();
+        this.CanEdit = ko.observable();
     };
 
     // knockout js view model
@@ -24,19 +24,9 @@ my.viewModel = function () {
         self.productId = ko.observable(0),
         self.productName = ko.observable(''),
         self.productRef = ko.observable(''),
-        self.hidden = ko.observable(false),
-        self.message = ko.observable(''),
         self.lang = ko.observable('pt-BR'),
-        self.archived = ko.observable(false),
-        self.listOrder = ko.observable(1),
         self.categoryId = ko.observable(0),
-        self.categoryName = ko.observable(''),
-        self.categoryDesc = ko.observable(''),
         self.parentId = ko.observable(0),
-        self.seoName = ko.observable(''),
-        self.seoPageTitle = ko.observable(''),
-        self.metaDesc = ko.observable(''),
-        self.metaKeywords = ko.observable(''),
         self.productCount = ko.observable(0),
 
         self.catPermissions = ko.observableArray([]),
@@ -61,19 +51,9 @@ my.viewModel = function () {
             productId: productId,
             productName: productName,
             productRef: productRef,
-            hidden: hidden,
-            message: message,
             lang: lang,
-            archived: archived,
-            listOrder: listOrder,
             categoryId: categoryId,
-            categoryName: categoryName,
-            categoryDesc: categoryDesc,
             parentId: parentId,
-            seoName: seoName,
-            seoPageTitle: seoPageTitle,
-            metaDesc: metaDesc,
-            metaKeywords: metaKeywords,
             productCount: productCount,
             catPermissions: catPermissions
         };

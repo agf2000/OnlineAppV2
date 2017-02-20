@@ -5,6 +5,7 @@ var fs = require("fs");
 var categoriesController = require("../controllers/categoriesController.js");
 var productsController = require("../controllers/productsController.js");
 var storeController = require("../controllers/storeController.js");
+var peopleController = require("../controllers/peopleController.js");
 
 var router = express.Router();
 
@@ -55,11 +56,15 @@ router.post('/file', upload.single('files'), function (req, res, next) {
 });
 
 router.put('/categories/update', upload.single('files'), function (req, res, next) {
-	return categoriesController.updateCategory(req, res, req.body, (req.file ? req.file.filename : null));
+	return categoriesController.updateCategory(req, res, req.body, (req.file ? req.file.filename : ""));
 });
 
 router.delete('/categories/remove/:id', function (req, res) {
 	return categoriesController.removeCategory(req, res, req.params.id);
+});
+
+router.get('/people/getPeople', function (req, res) {
+	peopleController.getPeople(req, res, req.query.draw, req.query.start, req.query.length, req.query.order, req.query.search);
 });
 
 module.exports = router;
