@@ -1,17 +1,13 @@
 'use strict';
 
-$(function () {
+$(function() {
 
-    // $(".treeViewCategories").LoadingOverlay("show", {
-    //     image       : "",
-    //     fontawesome : "fa fa-spinner fa-spin"
-    // });
     PNotify.prototype.options.styling = "bootstrap3";
     my.personId = my.getParameterByName('itemId');
     my.cats = null;
     my.returnUrl = my.getParameterByName('return');
     var menuItems = null;
-    // $.fn.validator.Constructor.INPUT_SELECTOR = ':input([type="file"]);'
+
     my.userInfo = JSON.parse(Cookies.getJSON('OnlineUser').replace('j:', ''));
 
     // VIEW MODEL
@@ -47,13 +43,16 @@ $(function () {
         }
     });
 
-    $('#files').on('filepreajax', function (event, previewId, index) {
+    $('#files').on('filepreajax', function(event, previewId, index) {
         console.log('File pre ajax triggered');
     });
 
-    $('#files').on('filepreupload', function (event, data, previewId, index) {
-        var form = data.form, files = data.files, extra = data.extra,
-            response = data.response, reader = data.reader;
+    $('#files').on('filepreupload', function(event, data, previewId, index) {
+        var form = data.form,
+            files = data.files,
+            extra = data.extra,
+            response = data.response,
+            reader = data.reader;
         console.log('File pre upload triggered');
     });
 
@@ -69,11 +68,11 @@ $(function () {
     //     console.log('Uploaded thumbnail successfully removed');
     // });
 
-    my.loadCatPermissions = function () {
-        $.getJSON('/api/categories/getCategoryPermissions?categoryId=' + my.vm.categoryId(), function (data) {
+    my.loadCatPermissions = function() {
+        $.getJSON('/api/categories/getCategoryPermissions?categoryId=' + my.vm.categoryId(), function(data) {
             if (data) {
                 my.vm.catPermissions.removeAll();
-                $.each(data, function (i, per) {
+                $.each(data, function(i, per) {
                     my.vm.catPermissions.push(new my.permission()
                         .CatPermissionId(per.CatPermissionId)
                         .CategoryId(per.CategoryId)
@@ -85,7 +84,7 @@ $(function () {
         });
     };
 
-    $('#menuTabs a').click(function (e) {
+    $('#menuTabs a').click(function(e) {
         e.preventDefault()
         $(this).tab('show')
     });
@@ -95,13 +94,13 @@ $(function () {
         menu.enable(menuItems, menuItems.hasClass('k-state-disabled'));*/
     }
 
-    my.loadCategories = function () {
+    my.loadCategories = function() {
         if (!my.cats) {
             var result = null;
             $.ajax({
                 url: '/api/categories/getCategories?portalId=0&lang=pt-BR&parentCategoryId=&filter=&archived=0&includeIsArchived=0',
                 async: false,
-                success: function (data) {
+                success: function(data) {
                     result = data;
                 }
             });
@@ -113,7 +112,7 @@ $(function () {
     };
 
     my.loadCategories();
-    my.buildMenudata = function () {
+    my.buildMenudata = function() {
         var source = [];
         var categoryItems = [];
         for (var i = 0; i < my.cats.length; i++) {
@@ -154,13 +153,13 @@ $(function () {
     my.sourceMenu = my.buildMenudata();
 
     var countMenu = 1;
-    my.buildMenuUL = function (parent, items) {
+    my.buildMenuUL = function(parent, items) {
         var li = $('<li id="0999999999" style="display: none">hidden</li>');
         if (countMenu <= 1) {
             li.appendTo(parent);
             countMenu = countMenu + 1;
         }
-        items.forEach(function (item) {
+        items.forEach(function(item) {
             if (item.text) {
                 // create LI element and append it to the parent element.
                 li = $("<li id='" + item.id + "'>" + item.text + "</li>");
@@ -180,14 +179,14 @@ $(function () {
     my.buildMenuUL(my.ulMenu, my.sourceMenu);
 
     $('#treeViewCategories').jqxTree();
-    $('#treeViewCategories').on('select', function (event) {
+    $('#treeViewCategories').on('select', function(event) {
         Pace.restart();
         var args = event.args;
         var item = $('#treeViewCategories').jqxTree('getItem', args.element);
         if (item.id !== '0999999999') {
             my.vm.categoryId(item.id);
             my.loadCatPermissions();
-            $.getJSON('/api/categories/' + item.id + '/pt-BR', function (data) {
+            $.getJSON('/api/categories/' + item.id + '/pt-BR', function(data) {
                 var category = data[0];
                 // my.vm.hidden(category.Hidden);
                 // my.vm.lang(category.Lang);
@@ -233,13 +232,13 @@ $(function () {
     });
 
     var countDDMenu = 1;
-    my.buildDDMenuUL = function (parent, items) {
+    my.buildDDMenuUL = function(parent, items) {
         var li = $("<li id='ddl_0'>Nenhuma</li>");
         if (countDDMenu <= 1) {
             li.appendTo(parent);
             countDDMenu = countDDMenu + 1;
         }
-        items.forEach(function (item) {
+        items.forEach(function(item) {
             if (item.text) {
                 // create LI element and append it to the parent element.
                 li = $("<li id='ddl_" + item.id + "'>" + item.text + "</li>");
@@ -264,7 +263,7 @@ $(function () {
     my.dropDownContent = '<div style="position: relative; margin-left: 5px; margin-top: 6px; color: #999; font-style: italic;"> Selecionar </div>';
     $('#availCategoriesButton').jqxDropDownButton('setContent', my.dropDownContent);
 
-    $('#mainCategories').on('select', function (event) {
+    $('#mainCategories').on('select', function(event) {
         var args = event.args;
         var item = $('#mainCategories').jqxTree('getItem', args.element);
         my.dropDownContent = '<div style="position: relative; margin-left: 5px; margin-top: 6px;">' + item.label + '</div>';
@@ -275,7 +274,7 @@ $(function () {
 
     $('#mainCategories').jqxTree({
         width: $('#availCategoriesButton').width()
-        //height: 300
+            //height: 300
     });
 
     $('.jqx-dropdownlist-content').addClass('jqx-dropdownlist-state-normal-placeholder');
@@ -533,7 +532,7 @@ $(function () {
             }
         }),
         sortable: true,
-        dataBinding: function () {
+        dataBinding: function() {
             my.record = 0;
         },
         columns: [{
@@ -551,13 +550,13 @@ $(function () {
             width: '10%',
             template: '<span id="spanEdit_#= RoleID #" style="cursor: default;"><input type="hidden" id="edit_#= RoleID #" name="edit_#= RoleID #" value="0" /></span>'
         }],
-        dataBound: function () {
+        dataBound: function() {
             if (this.dataSource.view().length > 0) {
                 var grid = this;
                 //my.pers = ko.utils.arrayFirst(my.vm.catPermissions(), function (item) {
                 //    return item;
                 //});
-                $.each(grid.tbody.find('tr'), function () {
+                $.each(grid.tbody.find('tr'), function() {
                     var model = grid.dataItem(this);
                     switch (model.RoleName) {
                         case "Administrators":
@@ -587,7 +586,7 @@ $(function () {
                             break;
                     }
                     if (my.vm.catPermissions().length > 0) {
-                        ko.utils.arrayFirst(my.vm.catPermissions(), function (item) {
+                        ko.utils.arrayFirst(my.vm.catPermissions(), function(item) {
                             if (item.RoleId() === model.RoleID) {
                                 if (item.CanEdit()) {
                                     $('#edit_' + model.RoleID).val(item.PermissionId());
@@ -601,8 +600,8 @@ $(function () {
                         $('#view_-1').val(1);
                     }
                     if ((model.RoleName === 'Editores') || (model.RoleName === 'Gerentes')) {
-                         $('#view_' + model.RoleID).val(2);
-                         $('#edit_' + model.RoleID).val(2);
+                        $('#view_' + model.RoleID).val(2);
+                        $('#edit_' + model.RoleID).val(2);
                     }
                     initTriStateCheckBox('spanView_' + model.RoleID, 'view_' + model.RoleID, true);
                     initTriStateCheckBox('spanEdit_' + model.RoleID, 'edit_' + model.RoleID, true);
@@ -615,7 +614,7 @@ $(function () {
     });
 
     $('#categoryForm')
-        .bootstrapValidator({
+        .validator({
             message: 'This value is not valid',
             feedbackIcons: {
                 valid: 'glyphicon glyphicon-ok',
@@ -646,7 +645,7 @@ $(function () {
                 }
             }
         })
-        .on('success.form.bv', function (e) {
+        .on('valid.bs.validator', function(e) {
             // Prevent form submission
             e.preventDefault();
 
@@ -656,7 +655,7 @@ $(function () {
             var categorySecurityData = [];
 
             var grid = $('#groupsGrid').data('kendoGrid');
-            $.each(grid.dataSource.data(), function (i, item) {
+            $.each(grid.dataSource.data(), function(i, item) {
 
                 if ($('#view_' + item.RoleID).val() !== '0') {
                     var perm = {};
@@ -670,7 +669,7 @@ $(function () {
                     var perm = {};
                     perm.RoleID = item.RoleID;
                     perm.PermissionId = $('#edit_' + item.RoleID).val(),
-                    perm.CanEdit = $('#edit_' + item.RoleID).val() === '2' ? true : false;
+                        perm.CanEdit = $('#edit_' + item.RoleID).val() === '2' ? true : false;
                     categorySecurityData.push(perm);
                 }
             });
@@ -755,7 +754,7 @@ $(function () {
                 dataType: 'json',
                 url: my.vm.categoryId() ? '/api/categories/update' : '/api/categories/add',
                 data: categoryData
-            }).done(function (data) {
+            }).done(function(data) {
                 if (!data.message) {
                     if (my.vm.categoryId()) {
 
@@ -770,7 +769,7 @@ $(function () {
                             label: $('#nameTextBox').val()
                         });
 
-                        setTimeout(function () {
+                        setTimeout(function() {
                             selectedElement.scrollIntoView();
                         }, 500);
 
@@ -782,7 +781,7 @@ $(function () {
                             addclass: 'stack-bottomright',
                             stack: my.stack_bottomright
                         });
-                        notice.get().click(function () {
+                        notice.get().click(function() {
                             notice.remove();
                         });
                     } else {
@@ -842,7 +841,7 @@ $(function () {
                             addclass: 'stack-bottomright',
                             stack: my.stack_bottomright
                         });
-                        notice.get().click(function () {
+                        notice.get().click(function() {
                             notice.remove();
                         });
                     }
@@ -859,11 +858,11 @@ $(function () {
                         addclass: 'stack-bottomright',
                         stack: my.stack_bottomright
                     });
-                    notice.get().click(function () {
+                    notice.get().click(function() {
                         notice.remove();
                     });
                 }
-            }).fail(function (jqXHR, textStatus) {
+            }).fail(function(jqXHR, textStatus) {
                 console.log(jqXHR.responseText);
             });
         });
@@ -1093,7 +1092,7 @@ $(function () {
     //     // }
     // });
 
-    $('#btnRemove').click(function (e) {
+    $('#btnRemove').click(function(e) {
         e.preventDefault();
 
         swal({
@@ -1104,12 +1103,12 @@ $(function () {
             showCancelButton: true,
             // reverseButtons: true,
             confirmButtonText: "Sim, excluir"
-        }).then(function (isConfirm) {
+        }).then(function(isConfirm) {
             if (isConfirm) {
                 $.ajax({
                     type: 'DELETE',
                     url: '/api/categories/remove/' + my.vm.categoryId()
-                }).done(function (data) {
+                }).done(function(data) {
                     if (!data.message) {
 
                         var selectedElement = $("#treeViewCategories").jqxTree('getSelectedItem').element;
@@ -1126,7 +1125,7 @@ $(function () {
                             addclass: 'stack-bottomright',
                             stack: my.stack_bottomright
                         });
-                        notice.get().click(function () {
+                        notice.get().click(function() {
                             notice.remove();
                         });
 
@@ -1141,15 +1140,15 @@ $(function () {
                             addclass: 'stack-bottomright',
                             stack: my.stack_bottomright
                         });
-                        notice.get().click(function () {
+                        notice.get().click(function() {
                             notice.remove();
                         });
                     }
-                }).fail(function (jqXHR, textStatus) {
+                }).fail(function(jqXHR, textStatus) {
                     console.log(jqXHR.responseText);
                 });
             }
-        }, function (dismiss) {
+        }, function(dismiss) {
             // dismiss can be 'cancel', 'overlay',
             // 'close', and 'timer'
             if (dismiss === 'cancel') {
@@ -1161,7 +1160,7 @@ $(function () {
                     addclass: 'stack-bottomright',
                     stack: my.stack_bottomright
                 });
-                notice.get().click(function () {
+                notice.get().click(function() {
                     notice.remove();
                 });
             }
@@ -1242,7 +1241,7 @@ $(function () {
         });
     });*/
 
-    $('#btnCancel').click(function (e) {
+    $('#btnCancel').click(function(e) {
         e.preventDefault();
 
         $('#btnCancel').hide();

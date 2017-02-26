@@ -1,0 +1,251 @@
+<div class="box">
+    <div class="box-body">
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tab_1" data-toggle="tab">Dados Básicos</a></li>
+                <li><a href="#tab_2" data-toggle="tab">Endereços</a></li>
+                <li><a href="#tab_3" data-toggle="tab">Contatos</a></li>
+                <li><a href="#tab_3" data-toggle="tab">Documentos</a></li>
+                <li><a href="#tab_3" data-toggle="tab">Login</a></li>
+                <li><a href="#tab_3" data-toggle="tab">Avatar (Foto)</a></li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        Mais Ações <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Agenda</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Propaganda</a></li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Produtos</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="tab_1">
+                    <form id="personForm" role="form" class="form-horizontal" data-toggle="validator">
+                        <div class="col-sm-6">
+                            <div class="form-group" id="liPersonType" data-bind="visible: askCompany()">
+                                <label class="col-sm-2" for="radioPerson">Natureza:</label>
+                                <label class="radio-inline">
+                                    <input id="radioPerson" name="Person" type="radio" value="1" data-bind="checked: personType">Física
+                                </label>
+                                <label class="radio-inline">
+                                    <input id="radioBusiness" name="Person" type="radio" value="0" data-bind="checked: personType">Jurídica
+                                </label>
+                            </div>
+                            <div class="form-group" id="liCompanyName">
+                                <label class="col-sm-2" for="companyTextBox">Razão Social:</label>
+                                <div class="col-sm-10">
+                                    <input id="companyTextBox" type="text" class="form-control enterastab" data-bind="value: companyName" title="Razão Social" data-content="Favor inserir o nome da emrpesa." />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2" for="firstNameTextBox">Nome:</label>
+                                <div class="col-sm-10">
+                                    <input id="firstNameTextBox" type="text" class="form-control enterastab" data-bind="value: firstName" title="Nome" data-content="Favor inserir o seu nome." data-role="validate" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2" for="lastNameTextBox">Sobrenome:</label>
+                                <div class="col-sm-10">
+                                    <input id="lastNameTextBox" type="text" class="form-control enterastab" data-bind="value: lastName" title="Sobrenome" data-content="Favor inserir o seu sobrenome." />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2" for="displayNameTextBox">Apelido / Fantasia:</label>
+                                <div class="col-sm-10">
+                                    <input id="displayNameTextBox" type="text" class="form-control enterastab" data-bind="value: displayName" title="Apelido / Fantasia" data-content="Favor inserir o apelido ou fantasia no caso de uma empresa. Nome e sobrenome ou razão social será usado se deixado em branco." />
+                                </div>
+                            </div>
+                            <div class="form-group" id="liPhone">
+                                <label class="col-sm-2" for="phoneTextBox">Telefone:</label>
+                                <div class="col-sm-10">
+                                    <input id="phoneTextBox" type="text" class="form-control enterastab" data-bind="value: telephone" title="Telefone" data-content="Favor inserir o telefone para contato." />
+                                </div>
+                            </div>
+                            <div class="form-group" id="liCell">
+                                <label class="col-sm-2" for="cellTextBox">Celular:</label>
+                                <div class="col-sm-10">
+                                    <input id="cellTextBox" type="text" class="form-control enterastab" data-bind="value: cell" />
+                                </div>
+                            </div>
+                            <div class="form-group" id="liFax">
+                                <label class="col-sm-2" for="faxTextBox">Fax:</label>
+                                <div class="col-sm-10">
+                                    <input id="faxTextBox" type="text" class="form-control enterastab" data-bind="value: fax" />
+                                </div>
+                            </div>
+                            <div class="form-group" id="liZero0800">
+                                <label class="col-sm-2" for="0800TextBox">Tel. 0800:</label>
+                                <div class="col-sm-10">
+                                    <input id="0800TextBox" type="text" class="form-control enterastab" data-bind="value: zero800" />
+                                </div>
+                            </div>
+                            <div class="form-group" id="liCPF">
+                                <label class="col-sm-2" for="cpfTextBox">CPF:</label>
+                                <div class="col-sm-10">
+                                    <input id="cpfTextBox" type="text" class="form-control enterastab" data-bind="value: cpf" title="CPF" data-content="Favor inserir o seu CPF." />
+                                </div>
+                            </div>
+                            <div class="form-group" id="liIdent">
+                                <label class="col-sm-2" for="identTextBox">RG:</label>
+                                <div class="col-sm-10">
+                                    <input id="identTextBox" type="text" class="form-control enterastab" data-bind="value: ident" title="Identidade" data-content="Favor inserir o seu RG." />
+                                </div>
+                            </div>
+                            <div class="form-group" data-bind="visible: !personUserId() > 0" id="liEmail">
+                                <label class="col-sm-2" for="btnCheckEmail">Email:</label>
+                                <div class="col-sm-10" style="white-space: nowrap;">
+                                    <input id="emailTextBox" class="form-control enterastab" type="email" placeholder="ex. nome@yahoo.com" data-bind="value: email, css: {: reqEmail() }, attr: {: reqEmail() }" title="Email" data-content="Favor inserir o seu endereço de email. O email é usado para se autenticar no website." />
+                                    <button id="btnCheckEmail" class="btn btn-small" title="Verificar" data-loading-text="<i class='fa fa-spinner fa-spin'></i>"><i class="fa fa-check"></i></button>
+                                </div>
+                            </div>
+                            <div class="form-group" id="liWebsite">
+                                <label class="col-sm-2" for="websiteTextBox">Website:</label>
+                                <div class="col-sm-10">
+                                    <input id="websiteTextBox" type="text" class="form-control enterastab" data-bind="value: website" title="Website" data-content="Favor inserir o endereço de seu website." />
+                                </div>
+                            </div>
+                            <div id="liLogin" class="form-group">
+                                <label class="col-sm-2" for="enableLoginChk">Criar Login:</label>
+                                <div class="col-sm-10">
+                                    <label class="checkbox">
+									<input id="enableLoginChk" type="checkbox" />
+									Marque p/ criar login (email obrigatório)
+								</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div id="registerTypes" class="form-group">
+                                <label class="col-sm-2" for="selectRegisterTypes">Grupo:</label>
+                                <div class="col-sm-10" style="margin: 0; padding: 0;">
+                                    <input id="selectRegisterTypes" />
+                                </div>
+                            </div>
+                            <div class="form-group" id="liSalesReps" data-bind="visible: authorized >= 3 && my.vendor !== '1'">
+                                <label class="col-sm-2" for="ddlSalesRep">Vendedor:</label>
+                                <div class="col-sm-10">
+                                    <input id="ddlSalesRep" data-bind="kendoDropDownList: { data: saleReps, value: selectedSalesRepId, dataTextField: 'DisplayName', dataValueField: 'MemberId' }" />
+                                </div>
+                            </div>
+                            <div class="form-group" id="liIndustries">
+                                <label class="col-sm-2" for="ddlIndustries">Atividades:</label>
+                                <div class="col-sm-10">
+                                    <select id="ddlIndustries" multiple="multiple" data-bind="options: industries, optionsValue: 'IndustryId', optionsText: 'IndustryTitle', selectedOptions: selectedIndustries, formatSelection: formatSelection, formatResult: formatResult, select2: {}" style="width: 200px"></select>
+                                </div>
+                            </div>
+                            <div class="form-group" id="liEIN">
+                                <label class="col-sm-2" for="einTextBox">CNPJ:</label>
+                                <div class="col-sm-10">
+                                    <input id="einTextBox" type="text" class="form-control enterastab" data-bind="value: ein" title="CNPJ" data-content="Favor inserir o CNPJ da emrpesa." />
+                                </div>
+                            </div>
+                            <div class="form-group" id="liST">
+                                <label class="col-sm-2" for="stateTaxTextBox">Insc. Est.:</label>
+                                <div class="col-sm-10">
+                                    <input id="stateTaxTextBox" type="text" class="form-control enterastab" data-bind="value: stateTax" title="Incrição Estadual" data-content="Favor inserir a inscrição estadual da emrpesa." />
+                                </div>
+                            </div>
+                            <div class="form-group" id="liCT">
+                                <label class="col-sm-2" for="cityTaxTextBox">Insc. Mun.:</label>
+                                <div class="col-sm-10">
+                                    <input id="cityTaxTextBox" type="text" class="form-control enterastab" data-bind="value: cityTax" title="Inscrição Municipal" data-content="Favor inserir a inscrição municipal da emrpesa." />
+                                </div>
+                            </div>
+                            <div class="form-group" id="liBio" data-bind="visible: (authorized === 1) || (bio().length > 1)">
+                                <label class="col-sm-2" for="bioTextArea">Biografia:</label>
+                                <div class="col-sm-10">
+                                    <textarea id="bioTextArea" data-bind="value: bio, visible: authorized === 1"></textarea>
+                                    <span id="bioArea" data-bind="value: bio, visible: authorized > 1"></span>
+                                </div>
+                            </div>
+                            <div id="liAddress" data-bind="visible: askAddress() && personId() === 0">
+                                <div class="form-group">
+                                    <label class="col-sm-2" for="postalCodeTextBox">Código Postal:</label>
+                                    <div class="col-sm-10">
+                                        <input id="postalCodeTextBox" type="text" class="form-control enterastab" data-bind="value: postalCode" title="CEP" data-content="Favor inserir o CEP referente ao endereço." />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2" for="streetTextBox">Endereço:</label>
+                                    <div class="col-sm-10" style="white-space: nowrap;">
+                                        <input id="streetTextBox" type="text" class="form-control enterastab input-medium" data-bind="value: street" title="Endereço" data-content="Favor inserir o nome da rua, avenida..." />
+                                        <input id="unitTextBox" type="text" class="form-control enterastab input-mini" placeholder="Nº" data-bind="value: unit" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2" for="complementTextBox">Complemento:</label>
+                                    <div class="col-sm-10">
+                                        <input id="complementTextBox" type="text" class="form-control enterastab" data-bind="value: complement" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2" for="districtTextBox">Bairro:</label>
+                                    <div class="col-sm-10">
+                                        <input id="districtTextBox" type="text" class="form-control enterastab" data-bind="value: district" title="Bairro" data-content="Favor inserir o nome do bairro ou distrito referente ao endereço." />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2" for="cityTextBox">Cidade:</label>
+                                    <div class="col-sm-10">
+                                        <input id="cityTextBox" type="text" class="form-control enterastab" data-bind="value: city" title="Cidade" data-content="Favor inserir o nome da cidade referente ao endereço." />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2" for="ddlRegions">Estado:</label>
+                                    <div class="col-sm-10">
+                                        <div data-bind="visible: hasRegions()">
+                                            <input id="ddlRegions" class="form-control enterastab" data-bind="kendoDropDownList: { data: regions, value: selectedRegion, dataTextField: 'RegionName', dataValueField: 'RegionCode', cascadeFrom: 'ddlCountries' }" />
+                                        </div>
+                                        <div data-bind="visible: !hasRegions()">
+                                            <input id="regionTextBox" type="text" data-bind="value: selectedRegion" title="Estado" data-content="Favor inserir o nome do estado ou região referente ao endereço." />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2" for="ddlCountries">País:</label>
+                                    <div class="col-sm-10">
+                                        <input id="ddlCountries" data-bind="kendoDropDownList: { data: countries, value: selectedCountry, dataTextField: 'CountryName', dataValueField: 'CountryCode' }" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" id="liComments">
+                                <label class="col-sm-2" for="commentsTextArea">Observações:</label>
+                                <div class="col-sm-10">
+                                    <textarea id="commentsTextArea" data-bind="value: comments"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group" data-bind="visible: my.personId > 0">
+                                <label class="col-sm-2" for="chkBoxBlocked">Bloqueado:</label>
+                                <div class="col-sm-10">
+                                    <input id="chkBoxBlocked" type="checkbox" class="normalCheckBox switch-small" data-on-label="SIM" data-off-label="NÃO" />
+                                </div>
+                            </div>
+                            <div class="form-group" data-bind="visible: my.personId > 0">
+                                <label class="col-sm-2" for="txtBoxBlockedReason">Razão do bloqueio:</label>
+                                <div class="col-sm-10">
+                                    <textarea id="blockedReasonTextArea" data-bind="value: reasonBlocked"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-small btnReturn" data-loading-text="<i class='fa fa-spinner fa-spin'></i>&nbsp; Um momento..."><i class="fa fa-chevron-left"></i>&nbsp; Retornar</button>
+                        <button id="btnUpdatePerson" class="btn btn-small btn-inverse" data-loading-text="<i class='fa fa-spinner fa-spin'></i>&nbsp; Um momento..."><i class="icon-plus icon-white"></i>&nbsp; Adicionar</button>
+                        <button id="btnDeletePerson" class="btn btn-small" data-loading-text="<i class='fa fa-spinner fa-spin'></i>&nbsp; Um momento..."><i class="icon icon-ban-circle"></i>&nbsp; Desativar</button>
+                        <button id="btnRemovePerson" class="btn btn-small" data-loading-text="<i class='fa fa-spinner fa-spin'></i>&nbsp; Um momento..."><i class="fa fa-times"></i>&nbsp; Excluir</button>
+                        <button id="btnRestorePerson" class="btn btn-small" data-loading-text="<i class='fa fa-spinner fa-spin'></i>&nbsp; Um momento..."><i class="fa fa-refresh"></i>&nbsp; Restaurar</button>
+                    </form>
+                </div>
+                <!-- /.tab-pane -->
+                <div class="tab-pane" id="tab_2">
+
+                </div>
+                <!-- /.tab-pane -->
+                <div class="tab-pane" id="tab_3">
+
+                </div>
+                <!-- /.tab-pane -->
+            </div>
+            <!-- /.tab-content -->
+        </div>
+    </div>
+</div>
