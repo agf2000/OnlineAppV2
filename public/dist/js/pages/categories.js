@@ -613,39 +613,10 @@ $(function() {
         }
     });
 
-    $('#categoryForm')
-        .validator({
-            message: 'This value is not valid',
-            feedbackIcons: {
-                valid: 'glyphicon glyphicon-ok',
-                invalid: 'glyphicon glyphicon-remove',
-                validating: 'glyphicon glyphicon-refresh'
-            },
-            fields: {
-                categoryName: {
-                    message: 'O Nome da categoria é obrigatório',
-                    validators: {
-                        notEmpty: {
-                            message: 'O Nome da categoria é obrigatório'
-                        },
-                        // stringLength: {
-                        //     min: 6,
-                        //     max: 30,
-                        //     message: 'The username must be more than 6 and less than 30 characters long'
-                        // },
-                        /*remote: {
-                            url: 'remote.php',
-                            message: 'The username is not available'
-                        },*/
-                        // regexp: {
-                        //     regexp: /^[a-zA-Z0-9_\.]+$/,
-                        //     message: 'The username can only consist of alphabetical, number, dot and underscore'
-                        // }
-                    }
-                }
-            }
-        })
-        .on('valid.bs.validator', function(e) {
+    $('#categoryForm').on('submit', function(e) {
+        if (e.isDefaultPrevented) {
+
+        } else {
             // Prevent form submission
             e.preventDefault();
 
@@ -865,7 +836,8 @@ $(function() {
             }).fail(function(jqXHR, textStatus) {
                 console.log(jqXHR.responseText);
             });
-        });
+        }
+    });
 
     // $('#categoryForm').validator().on('submit', function (e) {
     // $('#btnUpdateCategory').click(function (e) {

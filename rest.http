@@ -1,0 +1,14 @@
+
+GET http://dev.me:3000/api/store/getSettings
+
+###
+
+GET http://dev.me:3000/api/store/getIndustries
+
+###
+
+GET http://dev.me:3000/api/people/getSalesPeople?filter=&pageIndex=1&pageSize=10
+
+###
+
+GET http://dev.me:3000/api/store/getRolesByRoleGroup/0/''descontos''

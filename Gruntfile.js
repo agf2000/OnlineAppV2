@@ -132,6 +132,24 @@ module.exports = function(grunt) {
                         cwd: 'node_modules/jquery/dist/',
                         src: '**',
                         dest: 'public/plugins/jquery/dist/',
+                    },
+                    {
+                        expand: true,
+                        cwd: 'node_modules/typeahead.js/dist/',
+                        src: '**',
+                        dest: 'public/plugins/typeahead/dist/js/',
+                    },
+                    {
+                        expand: true,
+                        cwd: 'node_modules/sweetalert2/dist/',
+                        src: '*.css',
+                        dest: 'public/plugins/sweetalert2/dist/css/',
+                    },
+                    {
+                        expand: true,
+                        cwd: 'node_modules/sweetalert2/dist/',
+                        src: '*.js',
+                        dest: 'public/plugins/sweetalert2/dist/js/',
                     }
                 ]
             }

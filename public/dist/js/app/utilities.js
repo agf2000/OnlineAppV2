@@ -1,4 +1,3 @@
-
 var my = {}; //my namespace
 
 // $.widget.bridge('uitooltip', $.ui.tooltip);
@@ -13,7 +12,7 @@ moment.locale("pt-br");
 function doesDataSourceHaveChanges(ds) {
     var dirty = false;
 
-    $.each(ds._data, function () {
+    $.each(ds._data, function() {
         if (this.dirty === true) {
             dirty = true;
         }
@@ -26,8 +25,8 @@ function doesDataSourceHaveChanges(ds) {
 
 /* remove border around all input elements */
 if (navigator.userAgent.toLowerCase().indexOf("chrome") >= 0) {
-    $(window).load(function () {
-        $('input:-webkit-autofill').each(function () {
+    $(window).load(function() {
+        $('input:-webkit-autofill').each(function() {
             var text = $(this).val();
             var id = $(this).attr('id');
             $(this).after(this.outerHTML).remove();
@@ -36,7 +35,7 @@ if (navigator.userAgent.toLowerCase().indexOf("chrome") >= 0) {
     });
 }
 
-$(document).bind("keypress", function (e) {
+$(document).bind("keypress", function(e) {
     if (e.keyCode === kendo.keys.ESC) {
         var visibleWindow = $(".k-window:visible > .k-window-content");
         if (visibleWindow.length)
@@ -44,7 +43,7 @@ $(document).bind("keypress", function (e) {
     }
 });
 
-my.isNumberKey = function (evt) {
+my.isNumberKey = function(evt) {
     var charCode = (evt.which) ? evt.which : event.keyCode
     if (charCode > 31 && (charCode < 43 || charCode > 57))
         return false;
@@ -52,12 +51,12 @@ my.isNumberKey = function (evt) {
     return true;
 };
 
-my.isValidEmailAddress = function (emailAddress) {
+my.isValidEmailAddress = function(emailAddress) {
     var pattern = new RegExp(/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i);
     return pattern.test(emailAddress);
 };
 
-my.formatPhone = function (phonenum) {
+my.formatPhone = function(phonenum) {
     //return text.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
     var regexObj = /^(?:\+?1[-. ]?)?(?:\(?([0-9]{2})\)?[-. ]?)?([0-9]{4})[-. ]?([0-9]{4})$/;
     if (regexObj.test(phonenum)) {
@@ -66,14 +65,13 @@ my.formatPhone = function (phonenum) {
         if (parts[1]) { phone += "(" + parts[1] + ") "; }
         phone += parts[2] + "-" + parts[3];
         return phone;
-    }
-    else {
+    } else {
         //invalid phone number
         return phonenum;
     }
 };
 
-my.encodeSlash = function (str) {
+my.encodeSlash = function(str) {
     var urlEncodeForwardSlashedRegExp = new RegExp("/", "gi");
     str = str.replace(urlEncodeForwardSlashedRegExp, "%2F");
     return str;
@@ -81,20 +79,19 @@ my.encodeSlash = function (str) {
 
 /**
  * Format postal code
-*/
-my.formatPostalcode = function (pcode) {
+ */
+my.formatPostalcode = function(pcode) {
     var regexObj = /^\d{5}$|^\d{5}\-\d{}$/;
     if (regexObj.test(kendo.parseInt(pcode))) {
         var parts = pcode.match(regexObj);
         var pc = parts[1] + " " + parts[3];
         return pc.toUpperCase();
-    }
-    else {
+    } else {
         return pcode;
     }
 };
 
-my.getQuerystring = function (key, default_) {
+my.getQuerystring = function(key, default_) {
     if (default_ === null) default_ = "";
     key = key.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
     var regex = new RegExp("[\\?&]" + key + "=([^&#]*)");
@@ -105,45 +102,42 @@ my.getQuerystring = function (key, default_) {
         return qs[1];
 };
 
-my.getStringParameterByName = function (name) {
+my.getStringParameterByName = function(name) {
     var sURL = window.document.URL.toString();
     if (sURL.indexOf(name) > -1) {
         return sURL.split(name + '/')[1];
-    }
-    else {
+    } else {
         return '';
     }
 };
 
-my.getParameterByName = function (name) {
+my.getParameterByName = function(name) {
     var sURL = window.document.URL.toString();
     if (sURL.indexOf(name) > -1) {
         return parseInt(sURL.split(name + '/')[1]);
-    }
-    else {
+    } else {
         return 0;
     }
 };
 
-my.getTopParameterByName = function (name) {
+my.getTopParameterByName = function(name) {
     var sURL = window.top.document.URL.toString();
     if (sURL.indexOf(name) > -1) {
         return parseInt(sURL.split(name + '/')[1]);
-    }
-    else {
+    } else {
         return 0;
     }
 };
 
-my.formatCurrency = function (value) {
+my.formatCurrency = function(value) {
     return "R$ " + value.toFixed(2);
 };
 
-my.formatPercent = function (value) {
+my.formatPercent = function(value) {
     return value.toFixed(2) + ' %';
 };
 
-my.Left = function (str, n) {
+my.Left = function(str, n) {
     if (n <= 0)
         return "";
     else if (n > String(str).length)
@@ -152,7 +146,7 @@ my.Left = function (str, n) {
         return String(str).substring(0, n) + ' ...';
 };
 
-my.Right = function (str, n) {
+my.Right = function(str, n) {
     if (n <= 0)
         return "";
     else if (n > String(str).length)
@@ -164,7 +158,7 @@ my.Right = function (str, n) {
 };
 
 
-my.pmt = function (rate, per, nper, pv, fv) {
+my.pmt = function(rate, per, nper, pv, fv) {
 
     fv = parseFloat(fv);
 
@@ -190,9 +184,7 @@ my.pmt = function (rate, per, nper, pv, fv) {
 
         pmt_value = -(fv + pv) / nper;
 
-    }
-
-    else {
+    } else {
 
         x = Math.pow(1 + rate, nper);
 
@@ -206,7 +198,7 @@ my.pmt = function (rate, per, nper, pv, fv) {
 
 };
 
-my.conv_number = function (expr, decplaces) { // This function is from David Goodman's Javascript Bible.
+my.conv_number = function(expr, decplaces) { // This function is from David Goodman's Javascript Bible.
 
     var str = "" + Math.round(eval(expr) * Math.pow(10, decplaces));
 
@@ -222,7 +214,7 @@ my.conv_number = function (expr, decplaces) { // This function is from David Goo
 
 };
 
-my.scorePassword = function (pass) {
+my.scorePassword = function(pass) {
     var score = 0;
     if (!pass)
         return score;
@@ -251,7 +243,7 @@ my.scorePassword = function (pass) {
     return parseInt(score);
 };
 
-my.checkPassStrength = function (pass) {
+my.checkPassStrength = function(pass) {
     var score = my.scorePassword(pass);
     if (score > 80)
         return "Exceletente!";
@@ -263,14 +255,14 @@ my.checkPassStrength = function (pass) {
     return "Senha Não Compatível.";
 };
 
-my.size_format = function (bytes) {
+my.size_format = function(bytes) {
     var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes === 0) return 'n/a';
     var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
     return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[[i]];
 };
 
-my.endsWith = function (str, suffix) {
+my.endsWith = function(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 };
 
@@ -284,10 +276,10 @@ try {
     fail = my.storage.getItem(uid) != uid;
     my.storage.removeItem(uid);
     fail && (my.storage = false);
-} catch (e) { };
+} catch (e) {};
 
 // kendo dataSource sorting parameterMap command convertion
-my.convertSortingParameters = function (original) {
+my.convertSortingParameters = function(original) {
     if (original) {
         var sortIndex;
         var converted = "";
@@ -299,14 +291,14 @@ my.convertSortingParameters = function (original) {
     }
 };
 
-my.stripEndQuotes = function (s) {
+my.stripEndQuotes = function(s) {
     var t = s.length;
     if (s.charAt(0) == '"') s = s.substring(1, t--);
     if (s.charAt(--t) == '"') s = s.substring(0, t);
     return s;
 }
 
-my.createObject = function (value) {
+my.createObject = function(value) {
     var str = $('<div/>').html(value).text();
     var obj = str.substring(1, str.length - 2);;
     return $('<' + obj + '/>');
@@ -314,11 +306,11 @@ my.createObject = function (value) {
 
 //create a in-memory div, set it's inner text(which jQuery automatically encodes)
 //then grab the encoded contents back out.  The div never exists on the page.
-my.htmlDecode = function (value) {
+my.htmlDecode = function(value) {
     return $('<div/>').html(value).text();
 };
 
-my.htmlEncode = function (value) {
+my.htmlEncode = function(value) {
     //create a in-memory div, set it's inner text(which jQuery automatically encodes)
     //then grab the encoded contents back out.  The div never exists on the page.
     return $('<div/>').text(value).html();
@@ -326,10 +318,10 @@ my.htmlEncode = function (value) {
 
 // HtmlHelpers Module
 // Call by using my.htmlHelpers.getQueryStringValue("myname");
-my.htmlHelpers = function () {
+my.htmlHelpers = function() {
     return {
         // Based on http://stackoverflow.com/questions/901115/get-query-string-values-in-javascript
-        getQueryStringValue: function (name) {
+        getQueryStringValue: function(name) {
             var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
             return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
         }
@@ -338,20 +330,20 @@ my.htmlHelpers = function () {
 
 // StringHelpers Module
 // Call by using StringHelpers.padLeft("1", "000");
-my.stringHelpers = function () {
+my.stringHelpers = function() {
     return {
         // Pad string using padMask.  string '1' with padMask '000' will produce '001'.
-        padLeft: function (string, padMask) {
+        padLeft: function(string, padMask) {
             string = '' + string;
             return (padMask.substr(0, (padMask.length - string.length)) + string);
         }
     };
 }();
 
-my.displayCountdown = function () {
+my.displayCountdown = function() {
     var displayCountdownIntervalId,
         count = 3,
-        countdown = function () {
+        countdown = function() {
             var cd = new Date(count * 1000),
                 minutes = cd.getUTCMinutes(),
                 seconds = cd.getUTCSeconds(),
@@ -367,7 +359,7 @@ my.displayCountdown = function () {
 };
 
 // SessionManager Module
-my.sessionManager = function () {
+my.sessionManager = function() {
     // NOTE:  I use @Session.Timeout here, which is Razor syntax, and I am pulling that value
     //        right from the ASP.NET MVC Session variable.  Dangerous!  Reckless!  Awesome-sauce!
     //        You can just hard-code your timeout here if you feel like it.  But I might cry.
@@ -382,17 +374,17 @@ my.sessionManager = function () {
         extendSessionUrl = '/desktopmodules/rildoinfo/api/store/ExtendTime',
         expireSessionUrl = '/desktopmodules/rildoinfo/api/store/ExpireTime';
 
-    var endSession = function () {
+    var endSession = function() {
         $dlg.dialog('close');
         // location.href = expireSessionUrl;
-        $.get(expireSessionUrl, { portalId: _portalID, userName: _userName }, function (data) { });
-        setTimeout(function () {
+        $.get(expireSessionUrl, { portalId: _portalID, userName: _userName }, function(data) {});
+        setTimeout(function() {
             location.href = _returnURL;
         }, 500);
     };
 
-    var displayCountdown = function () {
-        var countdown = function () {
+    var displayCountdown = function() {
+        var countdown = function() {
             var cd = new Date(count * 1000),
                 minutes = cd.getUTCMinutes(),
                 seconds = cd.getUTCSeconds(),
@@ -402,7 +394,7 @@ my.sessionManager = function () {
 
             document.title = 'Expira em ' +
                 my.stringHelpers.padLeft(minutes, '00') + ':' +
-                    my.stringHelpers.padLeft(seconds, '00');
+                my.stringHelpers.padLeft(seconds, '00');
             $('#sm-countdown').html(cdDisplay);
             if (count === 0) {
                 document.title = 'Esta Sessão se Expirou.';
@@ -414,7 +406,7 @@ my.sessionManager = function () {
         displayCountdownIntervalId = window.setInterval(countdown, 1000);
     };
 
-    var promptToExtendSession = function () {
+    var promptToExtendSession = function() {
         $dlg = $('#sm-countdown-dialog')
             .dialog({
                 title: 'Aviso de Final de Sessão',
@@ -423,12 +415,12 @@ my.sessionManager = function () {
                 bgiframe: true,
                 modal: true,
                 buttons: {
-                    'Continuar': function () {
+                    'Continuar': function() {
                         $(this).dialog('close');
                         refreshSession();
                         document.title = originalTitle;
                     },
-                    'Sair': function () {
+                    'Sair': function() {
                         endSession(false);
                     }
                 }
@@ -437,7 +429,7 @@ my.sessionManager = function () {
         displayCountdown();
     };
 
-    var refreshSession = function () {
+    var refreshSession = function() {
         window.clearInterval(displayCountdownIntervalId);
         var img = new Image(1, 1);
         img.src = extendSessionUrl;
@@ -445,25 +437,26 @@ my.sessionManager = function () {
         startSessionManager();
     };
 
-    var startSessionManager = function () {
+    var startSessionManager = function() {
         promptToExtendSessionTimeoutId =
             window.setTimeout(promptToExtendSession, secondsBeforePrompt * 1000);
     };
 
     // Public Functions
     return {
-        start: function () {
+        start: function() {
             startSessionManager();
         },
 
-        extend: function () {
+        extend: function() {
             refreshSession();
         }
     };
 }();
 
-my.padLeft = function (str, max) {
+my.padLeft = function(str, max) {
     str = str.toString();
+
     function main(str, max) {
         return str.length < max ? main("0" + str, max) : str;
     }
@@ -475,32 +468,32 @@ String.prototype.padLeft = function padLeft(length, leadingChar) {
     return this.length < length ? (leadingChar + this).padLeft(length, leadingChar) : this;
 };
 
-Date.prototype.addSeconds = function (seconds) {
+Date.prototype.addSeconds = function(seconds) {
     this.setDate(this.getSeconds() + seconds);
     return this;
 };
 
-Date.prototype.addMinutes = function (minutes) {
+Date.prototype.addMinutes = function(minutes) {
     this.setDate(this.getMinutes() + minutes);
     return this;
 };
 
-Date.prototype.addDays = function (days) {
+Date.prototype.addDays = function(days) {
     this.setDate(this.getDate() + days);
     return this;
 };
 
-Date.prototype.addMonths = function (months) {
+Date.prototype.addMonths = function(months) {
     this.setDate(this.getMonth() + months);
     return this;
 };
 
-Date.prototype.addYears = function (years) {
+Date.prototype.addYears = function(years) {
     this.setDate(this.getFullYear() + years);
     return this;
 };
 
-my.daysBetween = function (date1, date2) {
+my.daysBetween = function(date1, date2) {
 
     // The number of milliseconds in one day
     var ONE_DAY = 1000 * 60 * 60 * 24;
@@ -516,7 +509,7 @@ my.daysBetween = function (date1, date2) {
     return Math.round(difference_ms / ONE_DAY);
 };
 
-my.setHours = function (date, days, nhr, nmin, nsec) {
+my.setHours = function(date, days, nhr, nmin, nsec) {
     var d, s;
     d = date;
     d = date.addDays(days);
@@ -525,40 +518,75 @@ my.setHours = function (date, days, nhr, nmin, nsec) {
     return (d);
 };
 
-String.prototype.strip = function () {
+String.prototype.strip = function() {
     var translate_re = /[úõôóíêéçãâáàÚÕÔÓÍÊÉÇÃÁÀÂ]/g;
     var translate = {
-        "À": "A", "Á": "A", "Ã": "A", "Â": "A",
-        "Ç": "C", "É": "E", "Ê": "E", "Í": "I",
-        "Ó": "O", "Ô": "O", "Õ": "O", "Ú": "U",
-        "à": "a", "á": "a", "â": "a", "ã": "a",
-        "ç": "c", "é": "e", "ê": "e", "í": "i",
-        "ó": "o", "ô": "o", "õ": "o", "ú": "u"
+        "À": "A",
+        "Á": "A",
+        "Ã": "A",
+        "Â": "A",
+        "Ç": "C",
+        "É": "E",
+        "Ê": "E",
+        "Í": "I",
+        "Ó": "O",
+        "Ô": "O",
+        "Õ": "O",
+        "Ú": "U",
+        "à": "a",
+        "á": "a",
+        "â": "a",
+        "ã": "a",
+        "ç": "c",
+        "é": "e",
+        "ê": "e",
+        "í": "i",
+        "ó": "o",
+        "ô": "o",
+        "õ": "o",
+        "ú": "u"
     };
-    return (this.replace(translate_re, function (match) {
+    return (this.replace(translate_re, function(match) {
         return translate[match];
-    })
-    );
+    }));
 };
 
 // file encoding must be UTF-8!
-my.getTextExtractor = function () {
-    return (function () {
+my.getTextExtractor = function() {
+    return (function() {
         var patternLetters = /[úõôóíêéçãâáàÚÕÔÓÍÊÉÇÃÁÀÂ]/g;
         var patternDateDmy = /^(?:\D+)?(\d{1,2})\.(\d{1,2})\.(\d{2,4})$/;
         var lookupLetters = {
-            "À": "A", "Á": "A", "Ã": "A", "Â": "A",
-            "Ç": "C", "É": "E", "Ê": "E", "Í": "I",
-            "Ó": "O", "Ô": "O", "Õ": "O", "Ú": "U",
-            "à": "a", "á": "a", "â": "a", "ã": "a",
-            "ç": "c", "é": "e", "ê": "e", "í": "i",
-            "ó": "o", "ô": "o", "õ": "o", "ú": "u"
+            "À": "A",
+            "Á": "A",
+            "Ã": "A",
+            "Â": "A",
+            "Ç": "C",
+            "É": "E",
+            "Ê": "E",
+            "Í": "I",
+            "Ó": "O",
+            "Ô": "O",
+            "Õ": "O",
+            "Ú": "U",
+            "à": "a",
+            "á": "a",
+            "â": "a",
+            "ã": "a",
+            "ç": "c",
+            "é": "e",
+            "ê": "e",
+            "í": "i",
+            "ó": "o",
+            "ô": "o",
+            "õ": "o",
+            "ú": "u"
         };
-        var letterTranslator = function (match) {
+        var letterTranslator = function(match) {
             return lookupLetters[match] || match;
         }
 
-        return function (node) {
+        return function(node) {
             var text = $.trim($(node).text());
             var date = text.match(patternDateDmy);
             if (date)
@@ -569,9 +597,9 @@ my.getTextExtractor = function () {
     })();
 };
 
-my.generateUUID = function () {
+my.generateUUID = function() {
     var d = new Date().getTime();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = (d + Math.random() * 16) % 16 | 0;
         d = Math.floor(d / 16);
         return (c == 'x' ? r : (r & 0x7 | 0x8)).toString(16);
@@ -579,9 +607,9 @@ my.generateUUID = function () {
     return uuid;
 };
 
-jQuery.fn.getCheckboxVal = function () {
+jQuery.fn.getCheckboxVal = function() {
     var vals = [];
-    this.each(function () {
+    this.each(function() {
         vals.push(kendo.parseInt(jQuery(this).val()));
     });
     return vals;
@@ -592,7 +620,7 @@ my.stack_bottomleft = { "dir1": "up", "dir2": "right", "firstpos1": 25, "firstpo
 my.stack_topleft = { "dir1": "down", "dir2": "right", "push": "top" };
 my.stack_topright = { "dir1": "down", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
 
-var ValidationUtility = function () {
+var ValidationUtility = function() {
     var validationElements = $('[data-role="validate"]');
     var elementCount;
 
@@ -601,7 +629,7 @@ var ValidationUtility = function () {
         trigger: 'manual'
     });
 
-    validationElements.on('invalid', function () {
+    validationElements.on('invalid', function() {
         if (elementCount === 0) {
             $('#' + this.id).addClass('invalid');
             $('#' + this.id).popover('show');
@@ -609,12 +637,12 @@ var ValidationUtility = function () {
         }
     });
 
-    validationElements.on('blur', function () {
+    validationElements.on('blur', function() {
         $('#' + this.id).removeClass('invalid');
         $('#' + this.id).popover('hide');
     });
 
-    var validate = function (formSelector) {
+    var validate = function(formSelector) {
         elementCount = 0;
 
         if (formSelector.indexOf('#') === -1) {
@@ -629,7 +657,7 @@ var ValidationUtility = function () {
     };
 };
 
-my.minmax = function (value, min, max) {
+my.minmax = function(value, min, max) {
     if (parseInt(value) < 0 || isNaN(value))
         return 0;
     else if (parseInt(value) > 100)
@@ -637,7 +665,7 @@ my.minmax = function (value, min, max) {
     else return value;
 };
 
-window.downloadFile = function (sUrl) {
+window.downloadFile = function(sUrl) {
 
     //iOS devices do not support downloading. We have to inform user about this.
     if (/(iP)/g.test(navigator.userAgent)) {
@@ -675,9 +703,13 @@ window.downloadFile = function (sUrl) {
     return true;
 }
 
-my.zeroPad = function (num, places) {
+my.zeroPad = function(num, places) {
     var zero = places - num.toString().length + 1;
     return Array(+(zero > 0 && zero)).join("0") + num;
+};
+
+my.getSettingValue = function(name) {
+    return my.userInfo.storeSettings.filter(function(a) { return a.settingname === name })[0].settingvalue.toLowerCase()
 };
 
 window.downloadFile.isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;

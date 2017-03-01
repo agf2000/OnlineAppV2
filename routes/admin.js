@@ -54,23 +54,29 @@ router.get('/clientes/novo', function(req, res, next) {
         title: 'Cadastro',
         css: [
             '/plugins/kendo/2017.1.118/styles/kendo.common.min.css',
-            '/plugins/kendo/2017.1.118/styles/kendo.uniform.min.css',
+            '/plugins/kendo/2017.1.118/styles/kendo.fiori.min.css',
             '/plugins/select2/dist/css/select2.min.css',
-            '/plugins/bootstrap-daterangepicker/css/daterangepicker-bs3.min.css',
+            '/plugins/daterangepicker/css/daterangepicker-bs3.min.css',
             '/plugins/bootstrap-dialog/dist/css/bootstrap-dialog.min.css',
-            // '/plugins/bootstrap-validator/dist/css/bootstrapValidator.min.css',
+            '/plugins/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css',
+            '/plugins/jqwidgets/styles/jqx.base.css',
+            '/plugins/bootstrap-validator/dist/css/bootstrapValidator.min.css',
             '/dist/css/pages/people.css'
         ],
         script: [
             '/plugins/kendo/2017.1.118/js/kendo.web.min.js',
+            '/plugins/knockout/build/output/knockout-latest.js',
             '/plugins/select2/dist/js/select2.min.js',
             '/plugins/select2/dist/js/i18n/pt-BR.js',
-            '/plugins/bootstrap-daterangepicker/js/daterangepicker.min.js',
+            '/plugins/daterangepicker/js/daterangepicker.min.js',
             '/plugins/bootstrap-dialog/dist/js/bootstrap-dialog.min.js',
-            '/plugins/jquery.inputmask/dist/inputmask/jquery.inputmask.bundle.js',
-            '/plugins/bootstrap-validator/dist/js/bootstrapValidator.min.js',
-            '/plugins/bootstrap-validator/dist/js/language/pt_BR.js',
+            '/plugins/jquery.inputmask/dist/jquery.inputmask.bundle.js',
+            '/plugins/bootstrap-validator/dist/validator.min.js',
+            '/plugins/bootstrap-validator/dist/language/pt_BR.js',
+            '/plugins/bootstrap-switch/dist/js/bootstrap-switch.min.js',
+            '/plugins/typeahead/dist/js/typeahead.bundle.min.js',
             '/dist/js/app/utilities.js',
+            '/dist/js/pages/clientViewModel.js',
             '/dist/js/pages/person.js'
         ]
     });
