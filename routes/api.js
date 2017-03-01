@@ -63,8 +63,9 @@ router.delete('/categories/remove/:id', function(req, res) {
     return categoriesController.removeCategory(req, res, req.params.id);
 });
 
-router.get('/people/getPeople', function(req, res) {
-    peopleController.getPeople(req, res, req.query.draw, req.query.start, req.query.length, req.query.order, req.query.search);
+router.get('/people/getClients', function(req, res) {
+    // peopleController.getPeople(req, res, req.query.draw, req.query.start, req.query.length, req.query.order, req.query.search);
+    peopleController.getClients(req, res, req.query.portalId, req.query.searchFor, req.query.pageIndex, req.query.pageSize, req.query.orderBy, req.query.orderDir);
 });
 
 router.get('/store/getSettings', function(req, res) {

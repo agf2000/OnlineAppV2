@@ -1,178 +1,387 @@
-$(function () {
+$(function() {
 
-    $(".box-body").LoadingOverlay("show");
+    PNotify.prototype.options.styling = "bootstrap3";
+    kendo.culture("pt-BR");
+    kendo.culture().calendar.firstDay = 1;
+    my.today = new Date();
 
-    $.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
-        var _that = this;
+    $('#kddlConditions').kendoDropDownList();
 
-        if (iDelay === undefined) {
-            iDelay = 500;
-        }
-
-        this.each(function (i) {
-            if (typeof _that.fnSettings().aanFeatures.f !== 'undefined') {
-                $.fn.dataTableExt.iApiIndex = i;
-                var
-                    oTimerId = null,
-                    sPreviousSearch = null,
-                    anControl = $('input', _that.fnSettings().aanFeatures.f);
-
-                anControl.unbind('keyup search input').bind('keyup search input', function () {
-
-                    if (sPreviousSearch === null || sPreviousSearch != anControl.val()) {
-                        window.clearTimeout(oTimerId);
-                        sPreviousSearch = anControl.val();
-                        oTimerId = window.setTimeout(function () {
-                            $.fn.dataTableExt.iApiIndex = i;
-                            _that.fnFilter(anControl.val());
-                        }, iDelay);
+    // Clients transport
+    var clientsTransport = {
+        read: {
+            url: '/api/people/getClients'
+        },
+        parameterMap: function(data, type) {
+            var strSearch = $('.tbSearchFor input:first').val().length > 0 ? ' and ' +
+                $('.selectSearchFor select:first option:selected').val() + ' ' +
+                $('.selectConditions select:first option:selected').val() + " '" +
+                ($('.selectConditions select:first option:selected').val() == 'like' ?
+                    "%" + $('.tbSearchFor input:first').val() + "%'" :
+                    $('.tbSearchFor input:first').val() + "'") : '';
+            if ($('.tbSearchFor input:first').val().length > 0 && $('.tbSearchFor2 input:first').val().length > 0) {
+                strSearch = ' and ' + $('.selectSearchFor select:first option:selected').val() + ' ' +
+                    $('.selectConditions select:first option:selected').val() + " '" +
+                    $('.tbSearchFor input:first').val() + "' and '" + $('.tbSearchFor2 input:first').val() + "'";
+            }
+            if ($('.selectSearchFor select.cloned').length > 0) {
+                $.each($('.tbSearchFor input.cloned'), function(i, item) {
+                    if ($('.tbSearchFor input.cloned')[i].value.length > 0 && $('.tbSearchFor2 input.cloned')[i].value.length > 0) {
+                        strSearch += ($('input[type=checkbox].cloned').eq(i).is(':checked') ? ' and ' : ' or ') +
+                            $('.selectSearchFor select.cloned option:selected')[i].value + ' ' +
+                            $('.selectConditions select.cloned option:selected')[i].value + ' ' + "'" +
+                            $('.tbSearchFor input.cloned')[i].value + "' and '" + $('.tbSearchFor2 input.cloned')[i].value + "'";
+                    } else if ($('.tbSearchFor input')[i].value.length > 0) {
+                        strSearch += ($('input[type=checkbox].cloned').eq(i).is(':checked') ? ' and ' : ' or ') +
+                            $('.selectSearchFor select.cloned option:selected')[i].value + ' ' +
+                            $('.selectConditions select.cloned option:selected')[i].value + ' ' + "'" +
+                            ($('.selectConditions select.cloned option:selected')[i].value == 'like' ? "%" +
+                                $('.tbSearchFor input.cloned')[i].value + "%'" : $('.tbSearchFor input.cloned')[i].value + "'");
                     }
                 });
-
-                return this;
             }
-        });
-        return this;
+            return {
+                portalId: 0,
+                searchFor: strSearch,
+                pageIndex: data.page,
+                pageSize: data.pageSize,
+                orderBy: data.sort[0] ? data.sort[0].field : 'personid',
+                orderDir: data.sort[0] ? data.sort[0].dir : 'desc'
+            };
+        }
     };
 
-    // $.ajax({
-    //     url: '/api/people/getPeople?portalId=0&pageIndex=1&pageSize=1000&orderBy=personId&orderDir=asc&searchfor=',
-    //     method: 'get',
-    //     dataType: 'json',
-    //     success: function (data) {
-    //         // var test = data[0];
-    //         $('#example2').dataTable({
-    //             data: data,
-    //             columns: [
-    //                 { 'data': 'PersonId' },
-    //                 { 'data': 'DisplayName' },
-    //                 { 'data': 'FirstName' },
-    //                 { 'data': 'LastName' }
-    //             ]
-    //         });
-    //     }
-    // });
-
-    var events = $('#events');
-
-    var table = $('#people').DataTable({
-        select: {
-            style: 'single',
-            blurable: true
+    // clients datasource
+    var clientsDataSource = new kendo.data.DataSource({
+        transport: clientsTransport,
+        pageSize: 10,
+        serverPaging: true,
+        serverSorting: true,
+        serverFiltering: true,
+        sort: {
+            field: "personid",
+            dir: "desc"
         },
-        // select: true,
-        // autoFill: true,
-        dom: 'Bfrtip',
-        stateSave: true,
-        buttons: [
-            // 'selected',
-            // 'selectedSingle',
-            // 'selectAll',
-            // 'selectNone',
-            // 'selectRows',
-            // 'selectColumns',
-            {
-                action: function (e, dt, node, config) {
-                    dt.ajax.reload();
-                },
-                text: '<i class="fa fa-refresh"></i>',
-                titleAttr: 'Recarregar'
-            },
-            {
-                extend: 'excelHtml5',
-                text: '<i class="fa fa-file-excel-o"></i>',
-                titleAttr: 'Expotar p/ Excel'
-            },
-            {
-                extend: 'pdfHtml5',
-                text: '<i class="fa fa-file-pdf-o"></i>',
-                titleAttr: 'Salvar em PDF'
-            },
-            {
-                extend: 'print',
-                text: '<i class="fa fa-print"></i>',
-                titleAttr: 'Imprimir'
-            },
-            {
-                extend: 'colvis',
-                text: '<i class="fa fa-eye"></i>',
-                titleAttr: 'Colunas'
-            },
-            // {
-            //     action: function (e, dt, type, indexes) {
-            //         var tableData = $('#people tr.selected').children("td").map(function () {
-            //             return $(this).text();
-            //         }).get();
-
-            //         alert("Your data is: " + $.trim(tableData[0]));
-            //     },
-            //     text: '<i class="fa fa-edit"></i>',
-            //     titleAttr: 'Editar'
-            // }
-        ],
-        columns: [
-            { 'data': 'PersonId' },
-            { 'data': 'CompanyName' },
-            { 'data': 'FirstName' },
-            { 'data': 'LastName' },
-            { 'data': 'DisplayName' },
-            {
-                'data': 'Telephone', 'render': function (value) {
-                    return (value !== null ? value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : '')
+        schema: {
+            model: {
+                id: 'personid',
+                fields: {
+                    personid: {
+                        editable: false,
+                        nullable: false
+                    },
+                    modifiedondate: {
+                        type: "date",
+                        format: "{0:MM/dd/yyyy}"
+                    },
+                    createdondate: {
+                        type: "date",
+                        format: "{0:dd/MM/yyyy}"
+                    }
                 }
             },
-            { 'data': 'statustitle' },
-            { 'data': 'haslogin', 'sortable': false, 'render': function (value) { return (value == 1 ? 'Sim' : 'Não') } }
-        ],
-        "language": {
-            "sEmptyTable": "Nenhum registro encontrado",
-            "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-            "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
-            "sInfoFiltered": "(Filtrados de _MAX_ registros)",
-            "sInfoPostFix": "",
-            "sInfoThousands": ".",
-            "sLengthMenu": "_MENU_ resultados por página",
-            "sLoadingRecords": "Carregando...",
-            "sProcessing": "Processando...",
-            "sZeroRecords": "Nenhum registro encontrado",
-            "sSearch": "Pesquisar",
-            "oPaginate": {
-                "sNext": "Próximo",
-                "sPrevious": "Anterior",
-                "sFirst": "Primeiro",
-                "sLast": "Último"
+            data: 'data',
+            total: 'total_count'
+        }
+    });
+
+    var clientsGrid = $('#clientsGrid').kendoGrid({
+        //autoBind: false,
+        dataSource: clientsDataSource,
+        //height: 380,
+        selectable: "row",
+        change: function(e) {
+            var row = this.select();
+            var id = row.data("uid");
+            my.uId = id;
+            var dataItem = this.dataItem(row);
+            if (dataItem) {
+                $('#btnEditSelected').attr({
+                    'disabled': false
+                });
+                $('#btnDeleteSelected').attr({
+                    'disabled': false
+                });
+            }
+
+            // if (my.admin || (dataItem.Cod_Funcionario == 0 || dataItem.Cod_Funcionario == my.userInfo.sgiid)) {
+            //     $('#btnDeleteSelected').attr({
+            //         'disabled': false
+            //     });
+            // } else {
+            //     $('#btnDeleteSelected').attr({
+            //         'disabled': true
+            //     });
+            // }
+        },
+        toolbar: kendo.template($("#tollbarTmpl").html()),
+        navigatable: true,
+        columns: [{
+                field: "personid",
+                title: "Cód.",
+                width: 75,
+                template: '#= my.padLeft(personid, 6) #'
             },
-            "oAria": {
-                "sSortAscending": ": Ordenar colunas de forma ascendente",
-                "sSortDescending": ": Ordenar colunas de forma descendente"
+            {
+                field: "displayname",
+                title: "Fantasia / Apelido",
+                width: 200
+            },
+            {
+                field: "phone",
+                title: "Tel. Principal",
+                width: 120
+            },
+            {
+                field: "cellphone",
+                title: "Tel. Principal",
+                width: 120,
+                hidden: true
+            },
+            {
+                field: "faxphone",
+                title: "Tel. Principal",
+                width: 120,
+                hidden: true
+            },
+            {
+                field: "contact",
+                title: "Contato",
+                width: 100
+            },
+            {
+                field: "cpf_cnpj",
+                title: "CPF/CNPJ",
+                width: 130
+            },
+            {
+                field: "companyname",
+                title: "Razão Social",
+                width: 200
+            },
+            {
+                field: "completeaddress",
+                title: "Endereço",
+                width: 450,
+                sortable: false
+            }
+        ],
+        sortable: {
+            allowUnsort: true
+        },
+        reorderable: true,
+        resizable: true,
+        //navigatable: true,
+        //scrollable: true,
+        //pdf: {
+        //    fileName: 'Tarefas_Grid.pdf',
+        //    allPages: true
+        //},
+        pageable: {
+            pageSizes: [10, 40, 70, 100],
+            refresh: true,
+            numeric: false,
+            input: true,
+            messages: {
+                display: "{0} - {1} de {2} clientes",
+                empty: "Sem Registro.",
+                page: "Página",
+                of: "de {0}",
+                itemsPerPage: "Clientes por vez",
+                first: "Ir para primeira página",
+                previous: "Ir para página anterior",
+                next: "Ir para próxima página",
+                last: "Ir para última página",
+                refresh: "Recarregar"
             }
         },
-        "processing": true,
-        "serverSide": true,
-        "ajax": "/api/people/getPeople"
+        dataBound: function() {
+            $('#btnEditSelected').attr({
+                'disabled': true
+            });
+            $('#btnDeleteSelected').attr({
+                'disabled': true
+            });
+
+            var grid = this;
+            grid.element.find('tbody tr:first').addClass('k-state-selected');
+            var selectedItem = grid.dataItem(grid.select());
+
+            if (selectedItem) {
+                var row = this.select();
+                var id = row.data("uid");
+                my.uId = id;
+
+                // if (my.admin || (selectedItem.Cod_Funcionario == 0 || selectedItem.Cod_Funcionario == my.userInfo.sgiid)) {
+                //     $('#btnEditSelected').attr({
+                //         'disabled': false
+                //     });
+                //     $('#btnDeleteSelected').attr({
+                //         'disabled': false
+                //     });
+                // }
+            }
+
+            /*$.each(grid.dataSource.data(), function (i, item) {
+                var rowSelector = ">tr:nth-child(" + (i + 1) + ")";
+                var row = grid.tbody.find(rowSelector);
+
+                if (item.Cod_Funcionario > 0 && item.Cod_Funcionario != my.userInfo.sgiid) {
+                    row.css({ 'display': 'none' });
+                }
+            });*/
+
+            $('#spanDateDisplay').html(moment(my.today).format('DD/MM/YYYY'));
+            $('.overlay').remove();
+        },
+        columnMenu: {
+            messages: {
+                sortAscending: "Ordenar A-Z",
+                sortDescending: "Ordenar Z-A",
+                filter: "Filtro",
+                columns: "Colunas"
+            }
+        }
+        //editable: true
+    }).data('kendoGrid');
+
+    $(document.body).keydown(function(e) {
+        if (e.altKey && e.keyCode == 71) {
+            $("#clientsGrid").data("kendoGrid").table.focus();
+        }
     });
 
-    table.on('draw.dt', function () {
-        $(".box-body").LoadingOverlay("hide", true);
+    var arrows = [37, 38, 39, 40];
+    clientsGrid.table.on("keydown", function(e) {
+        if (arrows.indexOf(e.keyCode) >= 0) {
+            if (e.keyCode == 38) {
+                setTimeout(function() {
+                    clientsGrid.select($('#clientsGrid').data('kendoGrid').select().prev());
+                }, 1);
+            }
+            if (e.keyCode == 40) {
+                setTimeout(function() {
+                    clientsGrid.select($('#clientsGrid').data('kendoGrid').select().next());
+                }, 1);
+            }
+        }
     });
 
-    table.on('select', function (e, dt, type, indexes) {
-        var rowData = table.rows(indexes).data().toArray();
-        console.log("data---" + rowData);
-    })
-        .on('deselect', function (e, dt, type, indexes) {
-            var rowData = table.rows(indexes).data().toArray();
-            console.log("data---" + rowData);
+    $('#btnEditSelected').click(function(e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        var grid = $('#clientsGrid').data("kendoGrid");
+        var dataItem = grid.dataSource.getByUid(my.uId);
+
+        window.location.href = '/admin/clientes/' + dataItem.personid; // + '/' + orderBy + '/' + orderDir;
+    });
+
+    $('#btnAdd').click(function(e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        window.location.href = '/admin/clientes/novo';
+    });
+
+    $("#clientsGrid").delegate("tbody > tr", "dblclick", function(e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        $('#btnEditSelected').click();
+    });
+
+    $('#tbSearchFor').keyup(function(e) {
+        if (e.keyCode === 13) {
+            $('#btnRecarregar').click();
+        }
+    });
+
+    $('#btnDoSearch').click(function(e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        clientsGrid.dataSource.read();
+    });
+
+    $('#btnAddFilter').click(function(e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        $('.selectSearchFor select:first').clone().addClass('cloned').appendTo('.selectSearchFor');
+        $('.selectConditions select:first').clone().addClass('cloned').appendTo('.selectConditions');
+        $('.tbSearchFor input:first').clone().addClass('cloned').appendTo('.tbSearchFor').parent().find("input:last").val('');
+        $('.tbSearchFor2 input:first').clone().addClass('cloned').appendTo('.tbSearchFor2').parent().find("input:last").val('');
+        $('.condition input:first').clone().addClass('cloned').appendTo('.filterButtons .form-group');
+        $('.filterButtons input.cloned').bootstrapSwitch();
+        $('.filterButtons .bootstrap-switch-small:last').css({
+            'margin-bottom': '10px'
         });
+        $('.filterButtons .bootstrap-switch-small:last').addClass('cloned');
+        $('#btnRemoveFilter').removeClass('hidden');
+    });
 
-    // $('#people tbody').on('click', 'tr', function () {
-    //     if ($(this).hasClass('selected')) {
-    //         $(this).removeClass('selected');
-    //     }
-    //     else {
-    //         table.$('tr.selected').removeClass('selected');
-    //         $(this).addClass('selected');
-    //     }
-    // });
+    $('#btnRemoveFilter').click(function(e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        $('.selectSearchFor select:last').remove();
+        $('.selectConditions select:last').remove();
+        $('.tbSearchFor input:last').remove();
+        $('.tbSearchFor2 input:last').remove();
+        $('.bootstrap-switch.cloned:last').remove();
+
+        if ($('.selectSearchFor select').length == 1) {
+            $('#btnRemoveFilter').addClass('hidden');
+        }
+    });
+
+    $('#btnRemoveFilters').click(function(e) {
+        if (e.clientX === 0) {
+            return false;
+        }
+        e.preventDefault();
+
+        $('.tbSearchFor input, .tbSearchFor2 input').val('');
+        $('.selectSearchFor select.cloned').remove();
+        $('.selectConditions select.cloned').remove();
+        $('.tbSearchFor input.cloned').remove();
+        $('.tbSearchFor2 input.cloned').remove();
+        $('.bootstrap-switch.cloned').remove();
+        clientsGrid.dataSource.read();
+    });
+
+    $.each(clientsGrid.columns, function(key, value) {
+        if (value.field == 'codigo') {
+            value.title = 'Código';
+        }
+        if (value.field.toLowerCase() == 'data_cadastro') {
+            value.field = 'dbo.removehora(c.data_cadastro)';
+        }
+        if (value.field.toLowerCase() == 'cpf_cnpj') {
+            value.field = 'dbo.removeformato(cpf_cnpj)';
+        }
+        $('.selectSearchFor select')
+            .append($("<option></option>")
+                .attr("value", value.field)
+                .text(value.title));
+    });
+
+    $('.selectSearchFor select')
+        .append($("<option></option>")
+            .attr("value", 'dbo.removehora(c.data_cadastro)')
+            .text('Data Cadastrado'));
 
 }());

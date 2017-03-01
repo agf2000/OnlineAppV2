@@ -1,7 +1,7 @@
 var db = require("../core/db");
 var util = require("util");
 
-exports.getPeople = function(req, res, draw, start, length, order, search) {
+/*exports.getPeople = function(req, res, draw, start, length, order, search) {
     try {
         var searchFor = search.value,
             orderBy = '',
@@ -57,6 +57,57 @@ exports.getPeople = function(req, res, draw, start, length, order, search) {
                     var result = { 'recordsTotal': data[1][0].recordstotal, 'recordsFiltered': data[0][0].totalcount, 'data': data[0] };
 
                     res.write(JSON.stringify(result));
+                    res.end();
+                }
+            }, true);
+    } catch (ex) {
+        res.writeHead(500, "Internal Server Error", {
+            "Content-Type": "text/html"
+        });
+        res.write("<html><title>500</title><body>500: Internal Server Error. Details: " + ex + "</body></html>");
+        res.end();
+    }
+};*/
+
+exports.getClients = function(req, res, portalId, searchFor, pageIndex, pageSize, orderBy, orderDir) {
+    try {
+        var sqlInst = "select top (" + pageSize + ") * from (select rowid = row_number() over (order by p." + orderBy + " " + orderDir + "), p.*, ";
+        sqlInst += "(case when p.[userid] > 0 then 1 else 0 end) as haslogin, st.[statustitle], ";
+        sqlInst += "(case when not p.[telephone] = '' then '(' + substring(p.[telephone], 1, 2) + ') ' + substring(p.[telephone], 3, 4) + '-' + substring(p.[telephone], 7, 4) else '' end) as phone, ";
+        sqlInst += "(case when not p.[cell] = '' then '(' + substring(p.[cell], 1, 2) + ') ' + substring(p.[cell], 3, 4) + '-' + substring(p.[cell], 7, 4) else '' end) as cellphone, ";
+        sqlInst += "(case when not p.[fax] = '' then '(' + substring(p.[fax], 1, 2) + ') ' + substring(p.[fax], 3, 4) + '-' + substring(p.[fax], 7, 4) else '' end) as faxphone, ";
+        sqlInst += "(case when not p.[zero800s] = '' then '(' + substring(p.[zero800s], 1, 2) + ') ' + substring(p.[zero800s], 4, 4) + '-' + substring(p.[zero800s], 7, 4) else '' end) as zero800phone, ";
+        sqlInst += "(case when isnull(p.personaddressid, 0) > 0 then (isnull(pa.street, '') + ', ' + isnull(pa.unit, '') + ', ' + isnull(pa.complement, '') + ' - ' + isnull(pa.district, '') + ', ' + isnull(pa.city, '') + ' / ' + isnull(pa.region, '') + ' ' + isnull(pa.postalcode, '')) end) as completeaddress, ";
+        sqlInst += "(case when (select top 1 [personid] from dbo.[estimates] where [personid] = p.[personid]) > 0 then 1 else 0 end) as locked, ";
+        sqlInst += "(stuff((select ', ' + i.[industrytitle] from dbo.[industries] i inner join dbo.[peopleindustries] ci on ci.[industryid] = i.[industryid] where ci.[personid] = p.[personid] for xml path ('')), 1, 2, '')) as activities, ";
+        sqlInst += "su.[displayname] as salesrepname, su.[email] as salesrepemail, count(*) over () as total_count ";
+        sqlInst += "from people p left outer join statuses st on p.statusid = st.[statusid] left outer join peopleaddresses pa on pa.personaddressid = p.personaddressid ";
+        sqlInst += "left outer join users su on p.salesrep = su.[userid] where p.portalid = 0 " + searchFor;
+        sqlInst += ") a where a.rowid > ((" + pageIndex + " - 1) * " + pageSize + ")";
+        // sqlInst += "select count(*) as recordstotal from people;";
+
+        db.querySql(sqlInst,
+            function(data, err) {
+                if (err) {
+                    res.writeHead(500, "Internal Server Error", {
+                        "Content-Type": "text/html"
+                    });
+                    res.write("<html><title>500</title><body>500: Internal Server Error. Details: " + err + "</body></html>");
+                    res.end();
+                } else {
+                    res.writeHead(200, {
+                        "Content-Type": "application/json"
+                    });
+
+                    var result = {
+                        'data': data[0],
+                        'total_count': data[0][0].total_count
+                    };
+
+                    res.write(JSON.stringify(result).replace(/"([\w]+)":/g, function($0, $1) {
+                        return ('"' + $1.toLowerCase() + '":');
+                    }));
+
                     res.end();
                 }
             }, true);
