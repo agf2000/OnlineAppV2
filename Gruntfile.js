@@ -27,6 +27,12 @@ module.exports = function(grunt) {
             dev: {
                 files: [{
                         expand: true,
+                        cwd: 'node_modules/bootstrap/dist/',
+                        src: '**',
+                        dest: 'public/plugins/bootstrap/dist/',
+                    },
+                    {
+                        expand: true,
                         cwd: 'node_modules/bootstrap-dialog/dist/',
                         src: '**',
                         dest: 'public/plugins/bootstrap-dialog/dist/',
@@ -125,7 +131,7 @@ module.exports = function(grunt) {
                         expand: true,
                         cwd: 'node_modules/ionicons/dist/',
                         src: '**',
-                        dest: 'public/plugins/ionicons/dist/js/',
+                        dest: 'public/plugins/ionicons/dist/',
                     },
                     {
                         expand: true,
@@ -150,6 +156,18 @@ module.exports = function(grunt) {
                         cwd: 'node_modules/sweetalert2/dist/',
                         src: '*.js',
                         dest: 'public/plugins/sweetalert2/dist/js/',
+                    },
+                    {
+                        expand: true,
+                        cwd: 'node_modules/icheck/',
+                        src: '*.js',
+                        dest: 'public/plugins/icheck/dist/js/',
+                    },
+                    {
+                        expand: true,
+                        cwd: 'node_modules/icheck/skins',
+                        src: '**',
+                        dest: 'public/plugins/icheck/dist/css/',
                     }
                 ]
             }

@@ -7,8 +7,11 @@ $(function() {
     my.cats = null;
     my.returnUrl = my.getParameterByName('return');
     var menuItems = null;
+    my.userInfo = [];
 
-    my.userInfo = JSON.parse(Cookies.getJSON('OnlineUser').replace('j:', ''));
+    if (Cookies.getJSON('OnlineUser')) {
+        my.userInfo = Cookies.getJSON('OnlineUser');
+    }
 
     // VIEW MODEL
     my.viewModel();

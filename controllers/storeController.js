@@ -1,4 +1,9 @@
+var express = require('express');
+var cookieParser = require('cookie-parser');
 var db = require("../core/db");
+
+var app = express();
+app.use(cookieParser());
 
 exports.getRoles = function(req, res, portalId) {
 
@@ -73,12 +78,17 @@ exports.getSettings = function(req, res, portalId) {
 
                 res.end();
             } else {
-                res.writeHead(200, {
+                /*res.writeHead(200, {
                     "Content-Type": "application/json"
-                });
-                res.write(JSON.stringify(data).replace(/"([\w]+)":/g, function($0, $1) {
+                });*/
+
+                res.cookie('StoreSettings', JSON.stringify(data).replace(/"([\w]+)":/g, function($0, $1) {
                     return ('"' + $1.toLowerCase() + '":');
                 }));
+
+                /*res.write(JSON.stringify(data).replace(/"([\w]+)":/g, function($0, $1) {
+                    return ('"' + $1.toLowerCase() + '":');
+                }));*/
 
                 res.end();
             }

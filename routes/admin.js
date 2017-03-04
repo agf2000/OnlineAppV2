@@ -1,13 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
-router.use(function(req, res, next) {
+/*router.use(function(req, res, next) {
     if (req.user.IsAdmin) {
         next();
         return;
     }
     res.redirect("/login");
-});
+});*/
 
 /* GET admin home page. */
 router.get('/', function(req, res, next) {
